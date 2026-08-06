@@ -136,11 +136,11 @@ const ODS = [
 /* Os três pilares do modelo ESG. */
 const PILARES = [
   {id:'E', letra:'E', nome:'Ambiental', ingles:'Environmental',
-   texto:'O que a empresa faz com o planeta. Energia, água, lixo, carbono: o que ela tira e o que devolve.'},
+   texto:'Impacto no meio ambiente: consumo de energia e água, emissão de poluentes, geração de resíduos, preservação de ecossistemas.'},
   {id:'S', letra:'S', nome:'Social', ingles:'Social',
-   texto:'O que a empresa faz com gente. Quem contrata, como trata, quanto paga, o efeito no bairro onde está.'},
+   texto:'Relação com as pessoas: condições de trabalho, saúde e segurança, diversidade, direitos humanos, efeito sobre a comunidade.'},
   {id:'G', letra:'G', nome:'Governança', ingles:'Governance',
-   texto:'Como as decisões são tomadas lá dentro. Quem manda, quem fiscaliza, o que é aberto e o que é escondido.'}
+   texto:'Como a organização é dirigida: transparência nas decisões, ética, prestação de contas, combate à corrupção, cumprimento das leis.'}
 ];
 
 const INK = '#0F0D0B', PAPER = '#F7F5F1';

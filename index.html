@@ -34,14 +34,26 @@
   .pilar-info .titulo{font-weight:900;text-transform:uppercase;font-size:.88rem;display:block;margin-bottom:4px}
   .pilar-info .texto{font-weight:500;font-size:.85rem;line-height:1.45;opacity:.8}
 
+  .conceito{margin:24px 0}
+  .conceito .rotulo{margin-bottom:9px}
+  .conceito p + p{margin-top:11px}
+
+  .ligacao{
+    font-weight:700;font-size:1rem;line-height:1.5;max-width:46ch;
+    margin:26px 0 30px;padding-left:14px;border-left:3px solid currentColor;
+  }
+
   .passos{margin:0 0 26px;padding:0;list-style:none;counter-reset:p}
   .passos li{
-    counter-increment:p;display:flex;gap:12px;align-items:baseline;
-    padding:10px 0;border-top:1px solid currentColor;
-    font-weight:700;font-size:.98rem;line-height:1.35;
+    counter-increment:p;display:flex;gap:13px;align-items:flex-start;
+    padding:12px 0;border-top:1px solid currentColor;
+    font-weight:500;font-size:.96rem;line-height:1.45;max-width:52ch;
   }
   .passos li:last-child{border-bottom:1px solid currentColor}
-  .passos li::before{content:counter(p);font-family:var(--mono);font-size:.76rem;opacity:.6;flex:0 0 auto}
+  .passos li::before{
+    content:counter(p);font-family:var(--mono);font-size:.76rem;opacity:.55;
+    flex:0 0 auto;width:14px;padding-top:2px;
+  }
 
   /* barra de ação colada no rodapé do celular */
   .acoes{
@@ -244,21 +256,35 @@
 
     <!-- 1. abertura -->
     <section class="tela abertura ativa" id="telaAbertura">
-      <span class="rotulo">Agenda 2030 · ONU &nbsp;+&nbsp; Modelo ESG</span>
-      <h1>O mundo tem 17 problemas na fila.<br>Um deles cai pra você.</h1>
-      <p>Em 2015, os 193 países da ONU sentaram numa sala e escreveram uma lista: <strong>17 Objetivos de Desenvolvimento Sustentável</strong>, as ODS, para resolver até 2030. Vai de fome a poluição dos oceanos, passando por internet, emprego e esgoto. São 169 metas no total.</p>
-      <p>Essa mesma lista virou dinheiro. Empresas e fundos de investimento hoje são avaliados por três letras — <strong>ESG</strong> — que são a agenda da ONU traduzida para a linguagem de quem assina cheque:</p>
+      <span class="rotulo">Atividade · Agenda 2030 e ESG</span>
+      <h1>17 objetivos da ONU,<br>3 pilares do ESG</h1>
+
+      <div class="conceito">
+        <span class="rotulo">O que são as ODS</span>
+        <p>Em 2015, os 193 países-membros da ONU aprovaram a <strong>Agenda 2030</strong>, um plano com 17 <strong>Objetivos de Desenvolvimento Sustentável</strong> — as ODS — a serem alcançados até 2030.</p>
+        <p>Cada objetivo trata de um desafio global: pobreza, fome, saúde, educação, água, energia, trabalho, desigualdade, clima. Juntos, os 17 objetivos se desdobram em 169 metas, com indicadores que medem o avanço de cada país.</p>
+      </div>
+
+      <div class="conceito">
+        <span class="rotulo">O que é ESG</span>
+        <p><strong>ESG</strong> é a sigla em inglês para <em>Environmental, Social and Governance</em>: ambiental, social e governança. São três critérios que empresas, bancos e investidores usam para avaliar um negócio além do resultado financeiro.</p>
+        <p>Na prática, o ESG responde a uma pergunta: além de dar lucro, essa organização cuida do meio ambiente, das pessoas e da forma como toma decisões?</p>
+      </div>
 
       <div class="pilares" id="pilaresInfo"></div>
 
+      <p class="ligacao">As ODS definem <strong>o que</strong> o mundo precisa resolver. O ESG é uma das formas de organizar essa mesma agenda dentro das empresas. Por isso quase toda ODS pode ser relacionada a pelo menos um dos três pilares — e é isso que você vai fazer agora.</p>
+
+      <span class="rotulo" style="margin-top:30px">Como funciona a atividade</span>
       <ol class="passos">
-        <li>Você recebe uma ODS. Só uma, e ela é sua.</li>
-        <li>Lê e entende o que está em jogo ali.</li>
-        <li>Decide: isso é E, S ou G?</li>
-        <li>Escreve o porquê e defende quando a turma comparar.</li>
+        <li>Você recebe uma ODS sorteada. O sistema distribui as 17 de forma equilibrada, então cada aluno fica com um objetivo para estudar.</li>
+        <li>Leia o que ela significa: a meta oficial, o que representa na prática e como aparece no Brasil.</li>
+        <li>Classifique: qual dos três pilares do ESG tem mais a ver com essa ODS? Escolha um e justifique por escrito.</li>
+        <li>Responda a uma pergunta sobre como essa ODS aparece no seu dia a dia.</li>
+        <li>No fim, a turma vê todas as classificações juntas e discute onde houve divergência.</li>
       </ol>
 
-      <div class="acoes"><button class="botao" id="btnComecar">Bora começar</button></div>
+      <div class="acoes"><button class="botao" id="btnComecar">Começar a atividade</button></div>
     </section>
 
     <!-- 2. identificação -->
@@ -289,13 +315,13 @@
         <span class="rotulo">Pergunta 1 de 2</span>
         <p class="pergunta">Essa ODS é E, S ou G?</p>
         <div class="escolhas" id="escolhas"></div>
-        <p class="dica">Várias ODS cabem em mais de um pilar. Não existe gabarito aqui — o que vale é o seu argumento.</p>
+        <p class="dica">Muitas ODS se encaixam em mais de um pilar. Não existe uma única resposta certa: o que será avaliado é a consistência do seu argumento.</p>
         <textarea class="campo" id="campoJust" maxlength="600"
-                  placeholder="Por que esse pilar? Duas frases bastam."></textarea>
+                  placeholder="Por que você escolheu esse pilar? Duas frases bastam."></textarea>
 
         <span class="rotulo" style="margin-top:26px">Pergunta 2 de 2</span>
         <p class="pergunta" id="provoca"></p>
-        <p class="dica">Essa é sobre a sua ODS no mundo real. Responde do seu jeito, com o que você conhece.</p>
+        <p class="dica">Esta pergunta é sobre a sua ODS no dia a dia. Responda com base no que você observa ao seu redor.</p>
         <textarea class="campo" id="campoResposta" maxlength="600"
                   placeholder="Sua resposta."></textarea>
 
@@ -304,7 +330,7 @@
       </div>
 
       <div class="confirmado" id="confirmado" style="display:none">
-        <span class="rotulo">Anotado — segura essa opinião</span>
+        <span class="rotulo">Respostas registradas</span>
         <p class="grande" id="escolhaFinal"></p>
         <p class="just" id="justFinal"></p>
         <span class="rotulo" style="margin-top:22px" id="rotPergFinal"></span>
