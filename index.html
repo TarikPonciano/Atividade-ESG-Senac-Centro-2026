@@ -73,6 +73,13 @@
   }
   .resumo{font-weight:500;font-size:1rem;line-height:1.45;max-width:40ch;margin-top:20px;opacity:.85}
 
+  .detalhes{margin-top:28px;display:grid;gap:1px;background:currentColor;border:1px solid currentColor}
+  .det{background:var(--c);padding:14px 15px}
+  .det p{font-weight:500;font-size:.93rem;line-height:1.5;margin-top:5px;max-width:44ch}
+  @media(min-width:760px){.detalhes{grid-template-columns:1fr 1fr}.det:last-child{grid-column:1/-1}}
+
+  .dica{font-size:.82rem;line-height:1.45;opacity:.6;font-weight:500;max-width:38ch;margin-bottom:16px}
+
   .bloco-esg{margin-top:32px;padding-top:22px;border-top:2px solid currentColor}
   .bloco-esg .pergunta{
     font-weight:900;text-transform:uppercase;letter-spacing:-.02em;
@@ -98,8 +105,8 @@
   .confirmado .just{font-weight:500;line-height:1.5;opacity:.8;max-width:40ch;font-size:.95rem}
 
   .embaralhando .nome-ods,.embaralhando .resumo,.embaralhando .bloco-esg,
-  .embaralhando .quem,.embaralhando .confirmado{opacity:.1}
-  .nome-ods,.resumo,.bloco-esg,.quem,.confirmado{transition:opacity 220ms linear}
+  .embaralhando .quem,.embaralhando .confirmado,.embaralhando .detalhes{opacity:.1}
+  .nome-ods,.resumo,.bloco-esg,.quem,.confirmado,.detalhes{transition:opacity 220ms linear}
 
   /* =========================================================
      Tela de projeção: ?qr=1
@@ -122,17 +129,34 @@
   .url{font-family:var(--mono);font-size:.7rem;word-break:break-all;opacity:.7;line-height:1.5;margin-top:12px}
 
   .proj-contador{
-    display:flex;gap:26px;padding:14px 0 16px;border-top:3px solid var(--ink);
+    display:flex;gap:26px;align-items:center;flex-wrap:wrap;
+    padding:14px 0 16px;border-top:3px solid var(--ink);
     border-bottom:1px solid #D8D3C9;margin-bottom:18px;
   }
   .proj-contador .v{font-family:var(--mono);font-size:1.7rem;line-height:1;display:block}
   .proj-contador .r{font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;opacity:.6;font-weight:700;margin-top:5px;display:block}
+  .proj-botao{
+    margin-left:auto;font-family:var(--display);font-weight:900;
+    text-transform:uppercase;font-size:.72rem;letter-spacing:.06em;
+    background:var(--ink);color:var(--paper);border:2px solid var(--ink);
+    border-radius:2px;padding:11px 16px;cursor:pointer;
+  }
+  .proj-botao[aria-pressed="true"]{background:transparent;color:var(--ink)}
+  .proj-botao:hover{opacity:.85}
+  .proj-botao:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+  @media(max-width:560px){.proj-botao{margin-left:0;width:100%;order:9}}
+
+  .selo-esg{
+    margin-left:auto;flex:0 0 auto;font-family:var(--mono);font-size:.78rem;
+    border:1.5px solid var(--ink);border-radius:2px;padding:3px 8px;
+    animation:entra 300ms ease both;
+  }
 
   .grade-alunos{display:grid;grid-template-columns:1fr;gap:8px}
   @media(min-width:560px){.grade-alunos{grid-template-columns:repeat(2,1fr)}}
   @media(min-width:1100px){.grade-alunos{grid-template-columns:repeat(3,1fr)}}
   .cartao-aluno{
-    display:flex;gap:11px;align-items:center;
+    display:flex;gap:11px;align-items:center;min-width:0;
     border:1px solid #D8D3C9;border-radius:2px;padding:10px 12px;background:#fff;
     animation:entra 400ms ease both;
   }
@@ -142,7 +166,7 @@
     display:flex;align-items:center;justify-content:center;
     font-family:var(--mono);font-size:.8rem;
   }
-  .cartao-aluno .txt{min-width:0}
+  .cartao-aluno .txt{min-width:0;flex:1 1 auto}
   .cartao-aluno .aluno{font-weight:900;font-size:.94rem;line-height:1.15;display:block;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .cartao-aluno .ods{font-size:.76rem;opacity:.65;font-weight:500;line-height:1.25;margin-top:2px;display:block}
@@ -165,31 +189,31 @@
     <!-- 1. abertura -->
     <section class="tela abertura ativa" id="telaAbertura">
       <span class="rotulo">Agenda 2030 · ONU &nbsp;+&nbsp; Modelo ESG</span>
-      <h1>17 objetivos.<br>3 pilares.<br>Um é seu.</h1>
-      <p>Em 2015, os 193 países da ONU assumiram <strong>17 Objetivos de Desenvolvimento Sustentável</strong> — as ODS — como agenda comum até 2030. Elas vão de erradicar a pobreza a proteger os oceanos.</p>
-      <p>O mercado traduziu essa mesma agenda em <strong>ESG</strong>, o conjunto de critérios usado hoje para avaliar empresas e decidir investimentos:</p>
+      <h1>O mundo tem 17 problemas na fila.<br>Um deles cai pra você.</h1>
+      <p>Em 2015, os 193 países da ONU sentaram numa sala e escreveram uma lista: <strong>17 Objetivos de Desenvolvimento Sustentável</strong>, as ODS, para resolver até 2030. Vai de fome a poluição dos oceanos, passando por internet, emprego e esgoto. São 169 metas no total.</p>
+      <p>Essa mesma lista virou dinheiro. Empresas e fundos de investimento hoje são avaliados por três letras — <strong>ESG</strong> — que são a agenda da ONU traduzida para a linguagem de quem assina cheque:</p>
 
       <div class="pilares" id="pilaresInfo"></div>
 
       <ol class="passos">
-        <li>Você recebe uma ODS sorteada, só sua.</li>
-        <li>Decide em qual pilar do ESG ela se encaixa melhor.</li>
-        <li>Escreve uma frase justificando a escolha.</li>
-        <li>Defende sua posição quando o quadro for montado.</li>
+        <li>Você recebe uma ODS. Só uma, e ela é sua.</li>
+        <li>Lê e entende o que está em jogo ali.</li>
+        <li>Decide: isso é E, S ou G?</li>
+        <li>Escreve o porquê e defende quando a turma comparar.</li>
       </ol>
 
-      <div class="acoes"><button class="botao" id="btnComecar">Começar</button></div>
+      <div class="acoes"><button class="botao" id="btnComecar">Bora começar</button></div>
     </section>
 
     <!-- 2. identificação -->
     <section class="tela identificacao" id="telaNome">
-      <span class="rotulo">Antes do sorteio</span>
+      <span class="rotulo">Antes de sortear</span>
       <h2>Como você<br>se chama?</h2>
-      <p class="sub">Nome e sobrenome. Serve para o professor saber qual ODS ficou com quem — e para você não receber duas.</p>
+      <p class="sub">Nome e sobrenome. É assim que o professor sabe qual ODS ficou com quem — e é o que garante que você não vai receber duas.</p>
       <input class="campo" id="campoNome" type="text" autocomplete="name"
-             placeholder="Seu nome completo" maxlength="60" enterkeyhint="go">
+             placeholder="Nome e sobrenome" maxlength="60" enterkeyhint="go">
       <p class="aviso" id="avisoNome"></p>
-      <div class="acoes"><button class="botao" id="btnSortear">Sortear minha ODS</button></div>
+      <div class="acoes"><button class="botao" id="btnSortear">Sortear a minha ODS</button></div>
     </section>
 
     <!-- 3. resultado -->
@@ -199,19 +223,26 @@
       <h1 class="nome-ods" id="nomeOds">—</h1>
       <p class="resumo" id="resumo"></p>
 
+      <div class="detalhes">
+        <div class="det"><span class="rotulo">Na prática</span><p id="naPratica"></p></div>
+        <div class="det"><span class="rotulo">No Brasil</span><p id="noBrasil"></p></div>
+        <div class="det"><span class="rotulo">Uma das metas oficiais</span><p id="metaOds"></p></div>
+      </div>
+
       <div class="bloco-esg" id="blocoEsg">
-        <span class="rotulo">Sua tarefa</span>
-        <p class="pergunta">Em qual pilar do ESG essa ODS se encaixa melhor?</p>
+        <span class="rotulo">Agora é com você</span>
+        <p class="pergunta">Essa ODS é E, S ou G?</p>
         <div class="escolhas" id="escolhas"></div>
         <p class="provoca" id="provoca"></p>
+        <p class="dica">Várias ODS cabem em mais de um pilar. Não existe gabarito aqui — o que vale é o seu argumento.</p>
         <textarea class="campo" id="campoJust" maxlength="400"
-                  placeholder="Por quê? Uma ou duas frases bastam."></textarea>
+                  placeholder="Explica seu raciocínio. Duas frases bastam."></textarea>
         <p class="aviso" id="avisoEsg"></p>
-        <div class="acoes"><button class="botao" id="btnEnviar" disabled>Enviar resposta</button></div>
+        <div class="acoes"><button class="botao" id="btnEnviar" disabled>Mandar resposta</button></div>
       </div>
 
       <div class="confirmado" id="confirmado" style="display:none">
-        <span class="rotulo">Resposta registrada</span>
+        <span class="rotulo">Anotado — segura essa opinião</span>
         <p class="grande" id="escolhaFinal"></p>
         <p class="just" id="justFinal"></p>
       </div>
@@ -224,7 +255,7 @@
 <div class="projecao">
   <div class="proj-topo">
     <div class="proj-chamada">
-      <span class="rotulo">Escaneie para participar</span>
+      <span class="rotulo">Aponta a câmera</span>
       <h2>Qual ODS<br>é a sua?</h2>
       <div id="qr"></div>
       <p class="url" id="urlTexto"></p>
@@ -235,9 +266,10 @@
         <div><span class="v" id="pAlunos">0</span><span class="r">Alunos</span></div>
         <div><span class="v" id="pCobertura">0/17</span><span class="r">ODS sorteadas</span></div>
         <div><span class="v" id="pRespostas">0</span><span class="r">Classificaram</span></div>
+        <button class="proj-botao" id="btnRevelar" aria-pressed="false">Revelar E · S · G</button>
       </div>
       <div class="grade-alunos" id="gradeAlunos"></div>
-      <p class="proj-vazio" id="projVazio">Ninguém sorteou ainda.<br>Os nomes aparecem aqui conforme a turma escaneia.</p>
+      <p class="proj-vazio" id="projVazio">Ninguém sorteou ainda.<br>Os nomes vão pipocando aqui conforme a turma escaneia.</p>
     </div>
   </div>
 </div>
@@ -289,6 +321,9 @@ function escrever(o){
   document.getElementById('numero').textContent  = rotuloOds(o);
   document.getElementById('nomeOds').textContent = o.nome;
   document.getElementById('resumo').textContent  = o.resumo;
+  document.getElementById('naPratica').textContent = o.naPratica;
+  document.getElementById('noBrasil').textContent  = o.noBrasil;
+  document.getElementById('metaOds').textContent   = o.meta;
   document.getElementById('provoca').textContent = o.pergunta;
   faixas.querySelectorAll('.faixa').forEach(f =>
     f.classList.toggle('ativa', Number(f.dataset.n) === o.n));
@@ -471,6 +506,25 @@ if (MODO_QR){
     c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   let ultimo = '';
 
+  /* Antes de revelar, a projeção mostra só quem sorteou e qual ODS caiu.
+     A classificação fica escondida para não contaminar quem ainda está
+     decidindo — e para a comparação no fim ter alguma graça. */
+  let revelado = sessionStorage.getItem('ods-revelado') === '1';
+  const btnRevelar = document.getElementById('btnRevelar');
+
+  function pintarBotao(){
+    btnRevelar.setAttribute('aria-pressed', String(revelado));
+    btnRevelar.textContent = revelado ? 'Esconder E · S · G' : 'Revelar E · S · G';
+  }
+  btnRevelar.addEventListener('click', () => {
+    revelado = !revelado;
+    sessionStorage.setItem('ods-revelado', revelado ? '1' : '0');
+    pintarBotao();
+    ultimo = '';           // força o redesenho dos cartões
+    acompanhar();
+  });
+  pintarBotao();
+
   async function acompanhar(){
     try {
       const r = await fetch('/api/lista', {cache:'no-store'});
@@ -481,7 +535,7 @@ if (MODO_QR){
       document.getElementById('projVazio').style.display = d.atribuicoes.length ? 'none' : 'block';
 
       const recentes = d.atribuicoes.slice().reverse();   // último a sortear aparece primeiro
-      const assinatura = recentes.map(x => x.nome + x.ods + x.esg).join('|');
+      const assinatura = recentes.map(x => x.nome + x.ods + (revelado ? x.esg : '')).join('|');
       if (assinatura === ultimo) return;
       ultimo = assinatura;
 
@@ -491,8 +545,9 @@ if (MODO_QR){
           <span class="num" style="background:${o.cor}">${o.n}</span>
           <span class="txt">
             <span class="aluno">${escapar(x.nome)}</span>
-            <span class="ods">${escapar(o.nome)}${x.esg ? ' · ' + x.esg : ''}</span>
+            <span class="ods">${escapar(o.nome)}</span>
           </span>
+          ${revelado && x.esg ? `<span class="selo-esg">${x.esg}</span>` : ''}
         </div>`;
       }).join('');
     } catch(e){

@@ -25,10 +25,12 @@ Em produção, na frente disso vai `https://sorteio-ods.onrender.com`. Rodando
 local, `http://SEU-IP:3000` — o terminal imprime os quatro endereços prontos
 ao subir o servidor.
 
-Os celulares precisam estar na **mesma rede Wi-Fi** do seu notebook.
-Se a rede da escola isolar os dispositivos entre si (comum em Wi-Fi de
-visitante), use um roteador próprio, o hotspot do seu celular, ou exponha
-a porta com `cloudflared tunnel --url http://localhost:3000`.
+Isso é só para rodar na sua máquina, em desenvolvimento. Nesse caso os
+celulares precisam estar na mesma rede Wi-Fi do notebook.
+
+**Com o projeto no Render, essa restrição não existe mais.** O endereço é
+público: funciona no 4G do aluno, no Wi-Fi da escola, em casa, de qualquer
+lugar. Ninguém precisa estar na mesma rede que ninguém.
 
 ## Como a distribuição fica uniforme
 
@@ -60,8 +62,15 @@ Cada aluno aparece marcado como `QR` ou `manual`, conforme a origem.
 
 **`/qr` — para projetar durante o sorteio.** De um lado o QR code e o
 endereço; do outro, a lista ao vivo de quem já sorteou e qual ODS recebeu,
-com os mais recentes no topo. É a tela que fica na parede enquanto a turma
-escaneia. No celular os dois blocos empilham.
+com os mais recentes no topo.
+
+A classificação ESG fica escondida. O contador mostra quantos já responderam,
+mas não o quê — só quando você aperta **Revelar E · S · G** os selos aparecem
+em todos os cartões de uma vez. Aperte de novo para esconder. A escolha vale
+só naquela aba e some ao fechar; se você recarregar a projeção no meio da
+aula, ela volta escondida.
+
+No celular os dois blocos empilham e o botão ocupa a largura toda.
 
 **`/painel` — para projetar no fechamento.** Só leitura, sem controles.
 Duas visões: por aluno e por pilar ESG, com as respostas agrupadas em E, S e
