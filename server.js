@@ -14,7 +14,20 @@ const TOTAL_ODS    = 17;
 
 const PASTA_DADOS = path.join(__dirname, 'dados');
 const ARQUIVO     = path.join(PASTA_DADOS, 'sorteio.json');
-const PUBLICO     = path.join(__dirname, 'public');
+
+/* A interface pode morar em public/ ou solta ao lado do server.js —
+   depende de como o repositório foi montado. Descobrimos qual é na subida. */
+const PUBLICO = fs.existsSync(path.join(__dirname, 'public', 'index.html'))
+  ? path.join(__dirname, 'public')
+  : __dirname;
+
+/* Lista fechada do que pode ser servido. Necessária porque, quando a
+   interface está na raiz, o server.js e o package.json estão na mesma
+   pasta — e nenhum dos dois deve sair pela porta 80. */
+const SERVIVEIS = new Set([
+  'index.html', 'admin.html', 'painel.html', 'ods.js', 'estilo.css',
+  'favicon.ico', 'favicon.png'
+]);
 
 /* ---------- estado ---------- */
 let dados = { atribuicoes: [], baralho: [] };
@@ -130,11 +143,13 @@ const ATALHOS = {
 
 function servirEstatico(res, urlPath){
   const rel = ATALHOS[urlPath] || decodeURIComponent(urlPath).replace(/^\/+/, '');
-  const alvo = path.join(PUBLICO, rel);
-  if (!alvo.startsWith(PUBLICO)) { res.writeHead(403).end('Proibido'); return; }
-  fs.readFile(alvo, (err, buf) => {
+  if (!SERVIVEIS.has(rel)){
+    res.writeHead(404, {'Content-Type':'text/plain; charset=utf-8'});
+    return res.end('Página não encontrada.');
+  }
+  fs.readFile(path.join(PUBLICO, rel), (err, buf) => {
     if (err) { res.writeHead(404, {'Content-Type':'text/plain; charset=utf-8'}).end('Página não encontrada.'); return; }
-    res.writeHead(200, { 'Content-Type': TIPOS[path.extname(alvo)] || 'application/octet-stream' });
+    res.writeHead(200, { 'Content-Type': TIPOS[path.extname(rel)] || 'application/octet-stream' });
     res.end(buf);
   });
 }
@@ -322,17 +337,21 @@ carregar();
 /* Falha barulhenta: sem a pasta public/ o servidor sobe e devolve 404 em
    tudo, o que é confuso de diagnosticar em produção. Melhor avisar aqui. */
 if (!fs.existsSync(path.join(PUBLICO, 'index.html'))){
-  console.error('\n  ERRO: não encontrei public/index.html.');
-  console.error('  O server.js espera esta estrutura:\n');
-  console.error('    server.js');
-  console.error('    package.json');
-  console.error('    public/index.html, admin.html, painel.html, ods.js, estilo.css\n');
+  console.error('\n  ERRO: não encontrei index.html.');
+  console.error('  Ele pode ficar em public/ ou solto ao lado do server.js,');
+  console.error('  junto de admin.html, painel.html, ods.js e estilo.css.\n');
   console.error(`  Procurei em: ${PUBLICO}`);
   try {
-    console.error(`  O que existe ao lado do server.js: ${fs.readdirSync(__dirname).join(', ')}\n`);
+    console.error(`  O que existe ali: ${fs.readdirSync(PUBLICO).join(', ')}\n`);
   } catch(e){ /* sem permissão de leitura: o aviso acima já basta */ }
   process.exit(1);
 }
+
+/* Confere se algum arquivo da interface ficou para trás. */
+const faltando = ['admin.html','painel.html','ods.js','estilo.css']
+  .filter(f => !fs.existsSync(path.join(PUBLICO, f)));
+if (faltando.length)
+  console.warn(`\n  AVISO: faltam no repositório: ${faltando.join(', ')}`);
 
 servidor.listen(PORTA, '0.0.0.0', () => {
   const ips = Object.values(os.networkInterfaces()).flat()
