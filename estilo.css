@@ -1,0 +1,106 @@
+:root{
+  --ink:#0F0D0B;
+  --paper:#F7F5F1;
+  --c:#0F0D0B;
+  --tinta:#F7F5F1;
+  --display:'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono:'Space Mono', ui-monospace, 'Courier New', monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--display);
+  background:var(--ink);
+  color:var(--tinta);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ---------- palco ---------- */
+.stage{
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
+  background:var(--c);
+  color:var(--tinta);
+  transition:background 600ms cubic-bezier(.2,.8,.2,1), color 300ms linear;
+}
+
+/* ---------- assinatura: as 17 faixas ---------- */
+.faixas{display:flex;height:12px;flex:0 0 auto;width:100%}
+.faixa{flex:1 1 0;transition:flex-grow 700ms cubic-bezier(.2,.9,.2,1), opacity 500ms linear}
+.revelado .faixa{opacity:.28}
+.revelado .faixa.ativa{flex-grow:8;opacity:1}
+
+main{
+  flex:1 1 auto;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:clamp(20px,6vw,64px);
+  padding-bottom:calc(clamp(20px,6vw,64px) + env(safe-area-inset-bottom));
+  max-width:860px;
+  width:100%;
+  margin:0 auto;
+}
+
+/* ---------- tipografia utilitária ---------- */
+.rotulo{
+  font-family:var(--mono);
+  font-size:.75rem;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  opacity:.72;
+  display:block;
+}
+h1,h2{font-weight:900;text-transform:uppercase;letter-spacing:-.035em;line-height:.92}
+
+/* ---------- botões e campos ---------- */
+.botao{
+  font-family:var(--display);
+  font-weight:900;
+  font-size:1.02rem;
+  letter-spacing:.02em;
+  text-transform:uppercase;
+  background:var(--tinta);
+  color:var(--c);
+  border:0;
+  border-radius:2px;
+  padding:20px 34px;
+  cursor:pointer;
+  width:100%;
+  max-width:360px;
+  transition:transform 120ms ease, opacity 150ms ease;
+}
+.botao:hover{opacity:.88}
+.botao:active{transform:scale(.985)}
+.botao:disabled{opacity:.4;cursor:not-allowed}
+.botao:focus-visible,.campo:focus-visible,.pilar:focus-visible{
+  outline:3px solid currentColor;outline-offset:4px
+}
+.campo{
+  font-family:var(--display);
+  font-weight:700;
+  font-size:1.15rem;          /* nunca abaixo de 16px: evita o zoom do iOS */
+  width:100%;
+  max-width:460px;
+  background:transparent;
+  color:inherit;
+  border:0;
+  border-bottom:2px solid currentColor;
+  padding:14px 2px;
+  margin-bottom:28px;
+  border-radius:0;            /* iOS arredonda campos por conta própria */
+  -webkit-appearance:none;
+}
+.campo::placeholder{color:currentColor;opacity:.35}
+textarea.campo{border:2px solid currentColor;padding:14px;font-size:1rem;font-weight:500;resize:vertical;min-height:96px}
+
+.aviso{
+  font-family:var(--mono);
+  font-size:.78rem;
+  line-height:1.5;
+  margin-top:-16px;
+  margin-bottom:22px;
+  min-height:1.2em;
+}
