@@ -318,6 +318,22 @@ const servidor = http.createServer(async (req, res) => {
 
 /* ---------- subida ---------- */
 carregar();
+
+/* Falha barulhenta: sem a pasta public/ o servidor sobe e devolve 404 em
+   tudo, o que é confuso de diagnosticar em produção. Melhor avisar aqui. */
+if (!fs.existsSync(path.join(PUBLICO, 'index.html'))){
+  console.error('\n  ERRO: não encontrei public/index.html.');
+  console.error('  O server.js espera esta estrutura:\n');
+  console.error('    server.js');
+  console.error('    package.json');
+  console.error('    public/index.html, admin.html, painel.html, ods.js, estilo.css\n');
+  console.error(`  Procurei em: ${PUBLICO}`);
+  try {
+    console.error(`  O que existe ao lado do server.js: ${fs.readdirSync(__dirname).join(', ')}\n`);
+  } catch(e){ /* sem permissão de leitura: o aviso acima já basta */ }
+  process.exit(1);
+}
+
 servidor.listen(PORTA, '0.0.0.0', () => {
   const ips = Object.values(os.networkInterfaces()).flat()
     .filter(i => i && i.family === 'IPv4' && !i.internal).map(i => i.address);
