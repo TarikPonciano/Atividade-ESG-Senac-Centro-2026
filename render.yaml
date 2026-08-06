@@ -8,6 +8,8 @@ services:
     startCommand: node server.js
     envVars:
       - key: CHAVE
-        sync: false        # você define o valor no painel do Render
+        sync: false                                  # defina no painel do Render
+      - key: URL_PUBLICA
+        value: https://sorteio-ods.onrender.com      # o que o QR code vai codificar
       - key: NODE_VERSION
         value: "22"

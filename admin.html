@@ -159,7 +159,7 @@
     <div class="barra" style="margin-top:12px">
       <input type="search" id="filtro" placeholder="Filtrar por nome ou ODS">
       <button class="btn vazio" id="btnPendentes">Só quem não respondeu</button>
-      <a class="btn vazio" href="painel.html" target="_blank">Abrir painel de projeção</a>
+      <a class="btn vazio" href="/painel" target="_blank">Abrir painel de projeção</a>
     </div>
     <table>
       <thead><tr>
@@ -172,7 +172,7 @@
   </section>
 
   <div class="rodape">
-    <a class="btn" href="api/csv">Baixar CSV</a>
+    <a class="btn" href="/api/csv">Baixar CSV</a>
     <button class="btn vazio" onclick="window.print()">Imprimir</button>
     <button class="btn perigo" id="btnReiniciar">Reiniciar turma</button>
     <span class="status" id="status"></span>
@@ -191,7 +191,7 @@ document.getElementById('faixas').innerHTML =
   ODS.map(o => `<div class="faixa" style="background:${o.cor}"></div>`).join('');
 
 async function post(rota, corpo){
-  const r = await fetch('api/' + rota, {
+  const r = await fetch('/api/' + rota, {
     method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({ ...corpo, chave: CHAVE })
   });
@@ -235,7 +235,7 @@ document.getElementById('btnCadastrar').addEventListener('click', async () => {
         <span class="chip"><span class="bolinha" style="background:${o.cor}">${o.n}</span>${esc(o.nome)}</span>
         <strong>${esc(r.nome)}</strong>
         ${r.repetido ? '<span class="marca">já tinha</span>' : ''}
-        <a class="acao" href="index.html?ods=${r.ods}" target="_blank" style="opacity:.6">mostrar ao aluno ↗</a>
+        <a class="acao" href="/?ods=${r.ods}" target="_blank" style="opacity:.6">mostrar ao aluno ↗</a>
       </div>`;
     }).join('');
     campo.value = '';
@@ -302,7 +302,7 @@ function desenhar(){
       <td data-r="Justificativa"><input class="just editando" value="${esc(x.justificativa)}" placeholder="anotar…" maxlength="400"></td>
       <td data-r="Origem"><span class="marca">${x.origem === 'professor' ? 'manual' : x.origem === 'recuperado' ? 'recuperado' : 'QR'}</span></td>
       <td style="text-align:right">
-        <a class="acao" href="index.html?ods=${x.ods}" target="_blank">ver ↗</a>
+        <a class="acao" href="/?ods=${x.ods}" target="_blank">ver ↗</a>
         <button class="acao rem">remover</button>
       </td>
     </tr>`;
@@ -311,7 +311,7 @@ function desenhar(){
 
 async function atualizar(){
   try {
-    const r = await fetch('api/lista', {cache:'no-store'});
+    const r = await fetch('/api/lista', {cache:'no-store'});
     dadosAtuais = await r.json();
     desenhar();
     document.getElementById('status').textContent =

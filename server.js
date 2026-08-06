@@ -119,8 +119,17 @@ const TIPOS = {
   '.woff2':'font/woff2', '.csv':'text/csv; charset=utf-8'
 };
 
+/* Atalhos: endereços curtos, fáceis de digitar ou ditar em sala. */
+const ATALHOS = {
+  '/':          'index.html',
+  '/qr':        'index.html',
+  '/projecao':  'index.html',
+  '/admin':     'admin.html',
+  '/painel':    'painel.html'
+};
+
 function servirEstatico(res, urlPath){
-  const rel = urlPath === '/' ? 'index.html' : decodeURIComponent(urlPath).replace(/^\/+/, '');
+  const rel = ATALHOS[urlPath] || decodeURIComponent(urlPath).replace(/^\/+/, '');
   const alvo = path.join(PUBLICO, rel);
   if (!alvo.startsWith(PUBLICO)) { res.writeHead(403).end('Proibido'); return; }
   fs.readFile(alvo, (err, buf) => {
@@ -128,6 +137,17 @@ function servirEstatico(res, urlPath){
     res.writeHead(200, { 'Content-Type': TIPOS[path.extname(alvo)] || 'application/octet-stream' });
     res.end(buf);
   });
+}
+
+/* Endereço público do serviço. Atrás do proxy do Render o protocolo real
+   vem no cabeçalho X-Forwarded-Proto — sem isso o QR sairia com http://
+   e o navegador do aluno reclamaria. */
+function enderecoPublico(req){
+  if (process.env.URL_PUBLICA) return process.env.URL_PUBLICA.replace(/\/+$/, '') + '/';
+  if (process.env.RENDER_EXTERNAL_URL) return process.env.RENDER_EXTERNAL_URL.replace(/\/+$/, '') + '/';
+  const proto = String(req.headers['x-forwarded-proto'] || 'http').split(',')[0].trim();
+  const host  = req.headers['x-forwarded-host'] || req.headers.host || 'localhost';
+  return `${proto}://${host}/`;
 }
 
 /* ---------- rotas ---------- */
@@ -138,7 +158,10 @@ const servidor = http.createServer(async (req, res) => {
   try {
     /* --- configuração --- */
     if (rota === '/api/config'){
-      return json(res, 200, { servidor: true, coletarEsg: COLETAR_ESG, total: TOTAL_ODS });
+      return json(res, 200, {
+        servidor: true, coletarEsg: COLETAR_ESG, total: TOTAL_ODS,
+        endereco: enderecoPublico(req)
+      });
     }
 
     /* --- sorteio --- */
@@ -300,11 +323,12 @@ servidor.listen(PORTA, '0.0.0.0', () => {
     .filter(i => i && i.family === 'IPv4' && !i.internal).map(i => i.address);
   console.log('\n  SORTEIO ODS + ESG');
   console.log('  ─────────────────────────────────────────────');
-  console.log(`  Alunos (mesmo Wi-Fi):  http://${ips[0] || 'seu-ip'}:${PORTA}`);
-  ips.slice(1).forEach(ip => console.log(`                         http://${ip}:${PORTA}`));
-  console.log(`  Administração:         http://localhost:${PORTA}/admin.html`);
-  console.log(`  Painel de projeção:    http://localhost:${PORTA}/painel.html`);
-  console.log(`  QR code para projetar: http://localhost:${PORTA}/?qr=1`);
+  const base = process.env.URL_PUBLICA || process.env.RENDER_EXTERNAL_URL
+            || `http://${ips[0] || 'localhost'}:${PORTA}`;
+  console.log(`  Alunos:                ${base.replace(/\/+$/, '')}`);
+  console.log(`  Projeção com QR:       ${base.replace(/\/+$/, '')}/qr`);
+  console.log(`  Administração:         ${base.replace(/\/+$/, '')}/admin`);
+  console.log(`  Painel de fechamento:  ${base.replace(/\/+$/, '')}/painel`);
   console.log(`  Chave do professor:    ${CHAVE_PROF}`);
   console.log(`  Já registrados:        ${dados.atribuicoes.length} aluno(s)\n`);
 });

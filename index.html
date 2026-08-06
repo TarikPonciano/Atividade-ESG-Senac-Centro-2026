@@ -325,7 +325,7 @@ function mostrarConfirmacao(){
 }
 
 async function api(rota, corpo){
-  const r = await fetch('api/' + rota, {
+  const r = await fetch('/api/' + rota, {
     method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(corpo)
   });
   const d = await r.json().catch(() => ({}));
@@ -412,7 +412,7 @@ document.getElementById('btnEnviar').addEventListener('click', async () => {
 
   /* 2. só depois pergunta ao servidor se ele existe */
   try {
-    const r = await fetch('api/config', {cache:'no-store'});
+    const r = await fetch('/api/config', {cache:'no-store'});
     if (r.ok){ const c = await r.json(); SERVIDOR = true; COLETAR_ESG = c.coletarEsg; }
   } catch(e){ SERVIDOR = false; }
 
@@ -435,24 +435,37 @@ document.getElementById('btnEnviar').addEventListener('click', async () => {
 })();
 
 /* =========================================================
-   Tela de projeção: ?qr=1
+   Tela de projeção: /qr, /projecao ou ?qr=1
    ========================================================= */
-if (params.get('qr') === '1'){
-  document.body.classList.add('qr');
-  const url = location.origin + location.pathname;
-  document.getElementById('urlTexto').textContent = url;
+const MODO_QR = params.get('qr') === '1' || /^\/(qr|projecao)\/?$/.test(location.pathname);
 
-  const s = document.createElement('script');
-  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
-  s.onload = () => {
-    const largura = Math.min(300, Math.max(180, Math.round(window.innerWidth * 0.55)));
-    new QRCode(document.getElementById('qr'),
-      { text:url, width:largura, height:largura, correctLevel: QRCode.CorrectLevel.M });
-  };
-  s.onerror = () => document.getElementById('qr').innerHTML =
-    '<p style="font-family:var(--mono);font-size:.7rem;padding:18px;max-width:230px;line-height:1.5">' +
-    'Sem internet para gerar o QR aqui. Use o endereço abaixo em qualquer gerador de QR code.</p>';
-  document.head.appendChild(s);
+if (MODO_QR){
+  document.body.classList.add('qr');
+
+  /* O QR precisa apontar para a raiz pública, não para a URL desta aba.
+     Se a projeção estiver aberta em /qr, o aluno não pode escanear /qr. */
+  let enderecoAlunos = location.origin + '/';
+  fetch('/api/config', {cache:'no-store'})
+    .then(r => r.ok ? r.json() : null)
+    .then(c => { if (c && c.endereco) enderecoAlunos = c.endereco; })
+    .catch(() => {})
+    .finally(desenharQr);
+
+  function desenharQr(){
+    document.getElementById('urlTexto').textContent =
+      enderecoAlunos.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+    s.onload = () => {
+      const largura = Math.min(320, Math.max(180, Math.round(window.innerWidth * 0.55)));
+      new QRCode(document.getElementById('qr'),
+        { text: enderecoAlunos, width: largura, height: largura, correctLevel: QRCode.CorrectLevel.M });
+    };
+    s.onerror = () => document.getElementById('qr').innerHTML =
+      '<p style="font-family:var(--mono);font-size:.7rem;padding:18px;max-width:230px;line-height:1.5">' +
+      'Sem internet para gerar o QR aqui. Use o endereço abaixo em qualquer gerador de QR code.</p>';
+    document.head.appendChild(s);
+  }
 
   const escapar = t => String(t ?? '').replace(/[&<>"]/g,
     c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -460,7 +473,7 @@ if (params.get('qr') === '1'){
 
   async function acompanhar(){
     try {
-      const r = await fetch('api/lista', {cache:'no-store'});
+      const r = await fetch('/api/lista', {cache:'no-store'});
       const d = await r.json();
       document.getElementById('pAlunos').textContent = d.atribuicoes.length;
       document.getElementById('pCobertura').textContent = d.contagem.filter(x => x>0).length + '/17';

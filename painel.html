@@ -127,7 +127,7 @@
   <p class="legenda">Cada quadro é uma ODS. O número no canto indica quantos alunos a receberam.</p>
 
   <div class="controles">
-    <a class="btn" href="api/csv">Baixar CSV</a>
+    <a class="btn" href="/api/csv">Baixar CSV</a>
     <button class="btn vazio" onclick="window.print()">Imprimir</button>
     <button class="btn vazio" id="btnReiniciar">Reiniciar turma</button>
     <span class="rotulo" id="status" style="margin-left:auto"></span>
@@ -224,7 +224,7 @@ function pintarLista(d){
 
 async function atualizar(){
   try {
-    const r = await fetch('api/lista', {cache:'no-store'});
+    const r = await fetch('/api/lista', {cache:'no-store'});
     pintarLista(await r.json());
     document.getElementById('status').textContent =
       'atualizado ' + new Date().toLocaleTimeString('pt-BR');
@@ -253,7 +253,7 @@ document.getElementById('corpo').addEventListener('click', async e => {
   if (!confirm(`Remover ${nome}? A ODS dele volta para o baralho.`)) return;
   const chave = prompt('Chave do professor:');
   if (!chave) return;
-  const r = await fetch('api/remover', {
+  const r = await fetch('/api/remover', {
     method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({ nome, chave })
   });
@@ -265,7 +265,7 @@ document.getElementById('btnReiniciar').addEventListener('click', async () => {
   if (!confirm('Apagar todos os sorteios e recomeçar? Uma cópia dos dados é guardada na pasta "dados".')) return;
   const chave = prompt('Chave do professor:');
   if (!chave) return;
-  const r = await fetch('api/reiniciar', {
+  const r = await fetch('/api/reiniciar', {
     method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({ chave })
   });
@@ -273,16 +273,23 @@ document.getElementById('btnReiniciar').addEventListener('click', async () => {
 });
 
 /* QR do endereço dos alunos */
-const enderecoAlunos = location.origin + location.pathname.replace(/painel\.html$/, '');
-document.getElementById('endereco').textContent = enderecoAlunos;
-const s = document.createElement('script');
-s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
-s.onload = () => new QRCode(document.getElementById('qr'),
-  { text: enderecoAlunos, width: 190, height: 190, correctLevel: QRCode.CorrectLevel.M });
-s.onerror = () => document.getElementById('qr').innerHTML =
-  '<p style="font-family:var(--mono);font-size:.68rem;padding:16px;max-width:170px;line-height:1.5">' +
-  'Sem internet para gerar o QR. Use o endereço ao lado em um gerador de QR code.</p>';
-document.head.appendChild(s);
+let enderecoAlunos = location.origin + '/';
+fetch('/api/config', {cache:'no-store'})
+  .then(r => r.ok ? r.json() : null)
+  .then(c => { if (c && c.endereco) enderecoAlunos = c.endereco; })
+  .catch(() => {})
+  .finally(() => {
+    document.getElementById('endereco').textContent =
+      enderecoAlunos.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+    s.onload = () => new QRCode(document.getElementById('qr'),
+      { text: enderecoAlunos, width: 190, height: 190, correctLevel: QRCode.CorrectLevel.M });
+    s.onerror = () => document.getElementById('qr').innerHTML =
+      '<p style="font-family:var(--mono);font-size:.68rem;padding:16px;max-width:170px;line-height:1.5">' +
+      'Sem internet para gerar o QR. Use o endereço ao lado em um gerador de QR code.</p>';
+    document.head.appendChild(s);
+  });
 </script>
 </body>
 </html>

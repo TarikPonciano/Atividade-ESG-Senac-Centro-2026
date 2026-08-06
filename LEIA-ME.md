@@ -16,10 +16,14 @@ O terminal mostra três endereços:
 
 | Para quem | Endereço |
 |---|---|
-| Alunos | `http://SEU-IP:3000` |
-| Administração (seu notebook) | `http://localhost:3000/admin.html` |
-| Painel de projeção | `http://localhost:3000/painel.html` |
-| QR em tela cheia | `http://localhost:3000/?qr=1` |
+| Alunos | `/` |
+| Projeção com QR e lista ao vivo | `/qr` |
+| Administração | `/admin` |
+| Painel de fechamento | `/painel` |
+
+Em produção, na frente disso vai `https://sorteio-ods.onrender.com`. Rodando
+local, `http://SEU-IP:3000` — o terminal imprime os quatro endereços prontos
+ao subir o servidor.
 
 Os celulares precisam estar na **mesma rede Wi-Fi** do seu notebook.
 Se a rede da escola isolar os dispositivos entre si (comum em Wi-Fi de
@@ -40,7 +44,7 @@ a mesma ODS — não há como sortear duas vezes.
 
 ## Duas telas para você
 
-**`admin.html` — no seu notebook.** Pede a chave uma vez por aba. Nela você:
+**`/admin` — no seu notebook.** Pede a chave uma vez por aba. Nela você:
 
 - **Cadastra alunos manualmente**, um nome por linha. Serve para quem não
   conseguiu escanear e também para lançar a chamada inteira antes da aula.
@@ -54,12 +58,12 @@ a mesma ODS — não há como sortear duas vezes.
 
 Cada aluno aparece marcado como `QR` ou `manual`, conforme a origem.
 
-**`?qr=1` — para projetar durante o sorteio.** De um lado o QR code e o
+**`/qr` — para projetar durante o sorteio.** De um lado o QR code e o
 endereço; do outro, a lista ao vivo de quem já sorteou e qual ODS recebeu,
 com os mais recentes no topo. É a tela que fica na parede enquanto a turma
 escaneia. No celular os dois blocos empilham.
 
-**`painel.html` — para projetar no fechamento.** Só leitura, sem controles.
+**`/painel` — para projetar no fechamento.** Só leitura, sem controles.
 Duas visões: por aluno e por pilar ESG, com as respostas agrupadas em E, S e
 G — é a visão para mostrar onde a turma discordou.
 
@@ -103,12 +107,13 @@ O `render.yaml` já está pronto. Passo a passo:
 2. No Render: **New → Blueprint**, conecte o repositório e confirme. Ele lê o
    `render.yaml` sozinho.
 3. Na tela de variáveis, defina `CHAVE` com a senha que você quer para o
-   `/admin.html`. Não deixe `senac`.
+   `/admin`. Não deixe `senac`. A `URL_PUBLICA` já vem preenchida no
+   `render.yaml` — é ela que o QR code codifica.
 4. Aguarde o primeiro build. A URL fica `https://sorteio-ods.onrender.com`.
 
 Sem blueprint, o caminho manual é **New → Web Service**, runtime `Node`,
-build `npm install`, start `node server.js`, plano `Free`, e a variável
-`CHAVE` adicionada à mão.
+build `npm install`, start `node server.js`, plano `Free`, e as variáveis
+`CHAVE` e `URL_PUBLICA` adicionadas à mão.
 
 ### Duas limitações do plano gratuito
 
@@ -118,7 +123,7 @@ assim, baixe o CSV ao final da aula — é o único registro que não depende de
 ninguém reabrir nada.
 
 **O serviço hiberna** após 15 minutos sem tráfego e leva cerca de um minuto
-para voltar. Deixe o `/admin.html` ou o `/?qr=1` abertos numa aba desde antes
+para voltar. Deixe o `/admin` ou o `/qr` abertos numa aba desde antes
 da aula: os dois consultam o servidor a cada 3 segundos e isso basta para
 mantê-lo acordado. Se a turma escanear com o serviço dormindo, o primeiro
 aluno espera um minuto e os demais entram normalmente.
