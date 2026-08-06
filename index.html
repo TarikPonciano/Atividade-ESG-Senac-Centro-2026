@@ -115,17 +115,30 @@
   body.qr .stage{display:none}
   body.qr{background:var(--paper)}
 
-  .proj-topo{display:grid;grid-template-columns:1fr;gap:24px;align-items:start;max-width:1200px;margin:0 auto}
-  @media(min-width:900px){.proj-topo{grid-template-columns:300px 1fr;gap:44px}}
+  .proj-topo{
+    display:grid;grid-template-columns:1fr;gap:26px;
+    align-items:start;max-width:1500px;margin:0 auto;
+  }
+  @media(min-width:900px){
+    .proj-topo{grid-template-columns:clamp(260px,28vw,430px) minmax(0,1fr);gap:clamp(30px,4vw,60px)}
+  }
 
-  .proj-chamada{text-align:center}
+  .proj-chamada{text-align:center;min-width:0}
   @media(min-width:900px){.proj-chamada{text-align:left;position:sticky;top:22px}}
   .proj-chamada h2{
     font-weight:900;text-transform:uppercase;letter-spacing:-.03em;
-    font-size:clamp(1.5rem,5vw,2.1rem);line-height:.95;margin:8px 0 16px;
+    font-size:clamp(1.5rem,3.4vw,2.6rem);
+    line-height:1.06;              /* .95 fazia o acento do É bater na linha de cima */
+    margin:10px 0 18px;
+    text-wrap:balance;
   }
-  #qr{padding:14px;background:#fff;border:3px solid var(--ink);display:inline-block;line-height:0}
-  .url{font-family:var(--mono);font-size:.7rem;word-break:break-all;opacity:.7;line-height:1.5;margin-top:12px}
+  #qr{
+    padding:14px;background:#fff;border:3px solid var(--ink);
+    display:block;width:fit-content;max-width:100%;line-height:0;margin-inline:auto;
+  }
+  @media(min-width:900px){#qr{margin-inline:0}}
+  #qr img,#qr canvas{display:block;max-width:100%;height:auto}
+  .url{font-family:var(--mono);font-size:.72rem;word-break:break-all;opacity:.7;line-height:1.5;margin-top:14px}
 
   .proj-contador{
     display:flex;gap:26px;align-items:center;flex-wrap:wrap;
@@ -210,7 +223,10 @@
   .cartao-aluno .aluno{font-weight:900;font-size:.94rem;line-height:1.15;display:block;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .cartao-aluno .ods{font-size:.76rem;opacity:.65;font-weight:500;line-height:1.25;margin-top:2px;display:block}
-  .proj-vazio{font-family:var(--mono);font-size:.82rem;opacity:.5;padding:30px 0;line-height:1.6}
+  .proj-vazio{
+    font-family:var(--mono);font-size:.86rem;opacity:.45;line-height:1.7;
+    padding:clamp(36px,7vw,70px) 0;border-bottom:1px solid #D8D3C9;
+  }
 
   @media print{
     body.qr .proj-contador,body.qr .grade-alunos{display:none}
@@ -578,15 +594,27 @@ if (MODO_QR){
     .catch(() => {})
     .finally(desenharQr);
 
+  /* O QR é medido pela coluna que o abriga, não pela janela: numa grade
+     de largura fixa, calcular por vw estourava o contêiner. */
+  function pintarQr(){
+    const caixa = document.getElementById('qr');
+    if (typeof QRCode === 'undefined') return;
+    const disponivel = caixa.parentElement.clientWidth - 34;   /* padding + borda */
+    const lado = Math.max(170, Math.min(420, disponivel));
+    caixa.innerHTML = '';
+    new QRCode(caixa, { text: enderecoAlunos, width: lado, height: lado,
+                        correctLevel: QRCode.CorrectLevel.M });
+  }
+
   function desenharQr(){
     document.getElementById('urlTexto').textContent =
       enderecoAlunos.replace(/^https?:\/\//, '').replace(/\/$/, '');
     const s = document.createElement('script');
     s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
     s.onload = () => {
-      const largura = Math.min(320, Math.max(180, Math.round(window.innerWidth * 0.55)));
-      new QRCode(document.getElementById('qr'),
-        { text: enderecoAlunos, width: largura, height: largura, correctLevel: QRCode.CorrectLevel.M });
+      pintarQr();
+      /* redesenha ao trocar de tela ou girar o aparelho */
+      let t; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(pintarQr, 200); });
     };
     s.onerror = () => document.getElementById('qr').innerHTML =
       '<p style="font-family:var(--mono);font-size:.7rem;padding:18px;max-width:230px;line-height:1.5">' +
