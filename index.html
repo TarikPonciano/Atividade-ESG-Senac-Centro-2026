@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ODS e ESG — atividade</title>
+<meta name="theme-color" content="#0F0D0B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilo.css">
+<style>
+  /* =========================================================
+     Escrito primeiro para o celular. As media queries só
+     acrescentam folga em telas maiores.
+     ========================================================= */
+  .tela{display:none}
+  .tela.ativa{display:block}
+
+  /* ---------- abertura ---------- */
+  .abertura h1{font-size:clamp(2rem,8.5vw,3.6rem);margin:14px 0 18px}
+  .abertura p{font-weight:500;font-size:1rem;line-height:1.55;max-width:46ch;opacity:.85}
+  .abertura p + p{margin-top:12px}
+
+  .pilares{
+    display:grid;grid-template-columns:1fr;gap:1px;
+    background:currentColor;border:1px solid currentColor;margin:26px 0;
+  }
+  @media(min-width:620px){.pilares{grid-template-columns:repeat(3,1fr)}}
+  .pilar-info{background:var(--c);padding:15px 14px;display:flex;gap:13px;align-items:flex-start}
+  @media(min-width:620px){.pilar-info{display:block;padding:18px 16px}}
+  .pilar-info .letra{font-family:var(--mono);font-size:1.7rem;line-height:1;flex:0 0 auto;width:24px}
+  @media(min-width:620px){.pilar-info .letra{display:block;margin-bottom:8px;width:auto;font-size:2rem}}
+  .pilar-info .titulo{font-weight:900;text-transform:uppercase;font-size:.88rem;display:block;margin-bottom:4px}
+  .pilar-info .texto{font-weight:500;font-size:.85rem;line-height:1.45;opacity:.8}
+
+  .passos{margin:0 0 26px;padding:0;list-style:none;counter-reset:p}
+  .passos li{
+    counter-increment:p;display:flex;gap:12px;align-items:baseline;
+    padding:10px 0;border-top:1px solid currentColor;
+    font-weight:700;font-size:.98rem;line-height:1.35;
+  }
+  .passos li:last-child{border-bottom:1px solid currentColor}
+  .passos li::before{content:counter(p);font-family:var(--mono);font-size:.76rem;opacity:.6;flex:0 0 auto}
+
+  /* barra de ação colada no rodapé do celular */
+  .acoes{
+    position:sticky;bottom:0;z-index:5;
+    background:var(--c);
+    padding:14px 0 calc(14px + env(safe-area-inset-bottom));
+    margin-top:6px;
+  }
+  .acoes::before{
+    content:'';position:absolute;left:0;right:0;top:-26px;height:26px;
+    background:linear-gradient(to top, var(--c), transparent);pointer-events:none;
+  }
+  .acoes .botao{max-width:none}
+  @media(min-width:620px){
+    .acoes{position:static;padding:0;margin-top:8px}
+    .acoes .botao{max-width:360px}
+  }
+
+  /* ---------- identificação ---------- */
+  .identificacao h2{font-size:clamp(1.8rem,7.5vw,3rem);margin:14px 0 10px}
+  .identificacao .sub{font-weight:500;opacity:.8;margin-bottom:26px;max-width:38ch;line-height:1.5;font-size:.98rem}
+
+  /* ---------- resultado ---------- */
+  .quem{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;opacity:.7;margin-bottom:16px;display:block}
+  .numero{font-family:var(--mono);font-size:.78rem;letter-spacing:.2em;display:block;margin-bottom:12px}
+  .nome-ods{
+    font-weight:900;font-size:clamp(2.1rem,9vw,4.4rem);
+    line-height:.9;letter-spacing:-.04em;text-transform:uppercase;text-wrap:balance;
+  }
+  .resumo{font-weight:500;font-size:1rem;line-height:1.45;max-width:40ch;margin-top:20px;opacity:.85}
+
+  .bloco-esg{margin-top:32px;padding-top:22px;border-top:2px solid currentColor}
+  .bloco-esg .pergunta{
+    font-weight:900;text-transform:uppercase;letter-spacing:-.02em;
+    font-size:clamp(1.1rem,4.6vw,1.5rem);line-height:1.1;margin:10px 0 18px;max-width:26ch;
+  }
+  .escolhas{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+  .pilar{
+    font-family:var(--display);background:transparent;color:inherit;
+    border:2px solid currentColor;border-radius:2px;
+    padding:15px 6px;cursor:pointer;text-align:center;min-height:76px;
+    transition:background 150ms ease,color 150ms ease;
+  }
+  .pilar .l{font-family:var(--mono);font-size:1.6rem;line-height:1;display:block}
+  .pilar .t{font-weight:900;text-transform:uppercase;font-size:.62rem;letter-spacing:.03em;display:block;margin-top:6px}
+  .pilar[aria-pressed="true"]{background:var(--tinta);color:var(--c)}
+  .provoca{font-weight:500;font-size:.9rem;line-height:1.5;max-width:38ch;opacity:.75;margin-bottom:16px}
+
+  .confirmado{margin-top:32px;padding-top:22px;border-top:2px solid currentColor}
+  .confirmado .grande{
+    font-weight:900;text-transform:uppercase;font-size:clamp(1.25rem,5.5vw,1.9rem);
+    letter-spacing:-.03em;line-height:1.05;margin:10px 0 12px;
+  }
+  .confirmado .just{font-weight:500;line-height:1.5;opacity:.8;max-width:40ch;font-size:.95rem}
+
+  .embaralhando .nome-ods,.embaralhando .resumo,.embaralhando .bloco-esg,
+  .embaralhando .quem,.embaralhando .confirmado{opacity:.1}
+  .nome-ods,.resumo,.bloco-esg,.quem,.confirmado{transition:opacity 220ms linear}
+
+  /* =========================================================
+     Tela de projeção: ?qr=1
+     ========================================================= */
+  .projecao{display:none;min-height:100dvh;background:var(--paper);color:var(--ink);padding:22px 20px 40px}
+  body.qr .projecao{display:block}
+  body.qr .stage{display:none}
+  body.qr{background:var(--paper)}
+
+  .proj-topo{display:grid;grid-template-columns:1fr;gap:24px;align-items:start;max-width:1200px;margin:0 auto}
+  @media(min-width:900px){.proj-topo{grid-template-columns:300px 1fr;gap:44px}}
+
+  .proj-chamada{text-align:center}
+  @media(min-width:900px){.proj-chamada{text-align:left;position:sticky;top:22px}}
+  .proj-chamada h2{
+    font-weight:900;text-transform:uppercase;letter-spacing:-.03em;
+    font-size:clamp(1.5rem,5vw,2.1rem);line-height:.95;margin:8px 0 16px;
+  }
+  #qr{padding:14px;background:#fff;border:3px solid var(--ink);display:inline-block;line-height:0}
+  .url{font-family:var(--mono);font-size:.7rem;word-break:break-all;opacity:.7;line-height:1.5;margin-top:12px}
+
+  .proj-contador{
+    display:flex;gap:26px;padding:14px 0 16px;border-top:3px solid var(--ink);
+    border-bottom:1px solid #D8D3C9;margin-bottom:18px;
+  }
+  .proj-contador .v{font-family:var(--mono);font-size:1.7rem;line-height:1;display:block}
+  .proj-contador .r{font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;opacity:.6;font-weight:700;margin-top:5px;display:block}
+
+  .grade-alunos{display:grid;grid-template-columns:1fr;gap:8px}
+  @media(min-width:560px){.grade-alunos{grid-template-columns:repeat(2,1fr)}}
+  @media(min-width:1100px){.grade-alunos{grid-template-columns:repeat(3,1fr)}}
+  .cartao-aluno{
+    display:flex;gap:11px;align-items:center;
+    border:1px solid #D8D3C9;border-radius:2px;padding:10px 12px;background:#fff;
+    animation:entra 400ms ease both;
+  }
+  @keyframes entra{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+  .cartao-aluno .num{
+    width:34px;height:34px;flex:0 0 auto;border-radius:2px;color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:.8rem;
+  }
+  .cartao-aluno .txt{min-width:0}
+  .cartao-aluno .aluno{font-weight:900;font-size:.94rem;line-height:1.15;display:block;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cartao-aluno .ods{font-size:.76rem;opacity:.65;font-weight:500;line-height:1.25;margin-top:2px;display:block}
+  .proj-vazio{font-family:var(--mono);font-size:.82rem;opacity:.5;padding:30px 0;line-height:1.6}
+
+  @media print{
+    body.qr .proj-contador,body.qr .grade-alunos{display:none}
+    .url{opacity:1}
+  }
+  @media (prefers-reduced-motion: reduce){ *{transition-duration:1ms !important;animation-duration:1ms !important} }
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+  <div class="faixas" id="faixas" aria-hidden="true"></div>
+
+  <main>
+
+    <!-- 1. abertura -->
+    <section class="tela abertura ativa" id="telaAbertura">
+      <span class="rotulo">Agenda 2030 · ONU &nbsp;+&nbsp; Modelo ESG</span>
+      <h1>17 objetivos.<br>3 pilares.<br>Um é seu.</h1>
+      <p>Em 2015, os 193 países da ONU assumiram <strong>17 Objetivos de Desenvolvimento Sustentável</strong> — as ODS — como agenda comum até 2030. Elas vão de erradicar a pobreza a proteger os oceanos.</p>
+      <p>O mercado traduziu essa mesma agenda em <strong>ESG</strong>, o conjunto de critérios usado hoje para avaliar empresas e decidir investimentos:</p>
+
+      <div class="pilares" id="pilaresInfo"></div>
+
+      <ol class="passos">
+        <li>Você recebe uma ODS sorteada, só sua.</li>
+        <li>Decide em qual pilar do ESG ela se encaixa melhor.</li>
+        <li>Escreve uma frase justificando a escolha.</li>
+        <li>Defende sua posição quando o quadro for montado.</li>
+      </ol>
+
+      <div class="acoes"><button class="botao" id="btnComecar">Começar</button></div>
+    </section>
+
+    <!-- 2. identificação -->
+    <section class="tela identificacao" id="telaNome">
+      <span class="rotulo">Antes do sorteio</span>
+      <h2>Como você<br>se chama?</h2>
+      <p class="sub">Nome e sobrenome. Serve para o professor saber qual ODS ficou com quem — e para você não receber duas.</p>
+      <input class="campo" id="campoNome" type="text" autocomplete="name"
+             placeholder="Seu nome completo" maxlength="60" enterkeyhint="go">
+      <p class="aviso" id="avisoNome"></p>
+      <div class="acoes"><button class="botao" id="btnSortear">Sortear minha ODS</button></div>
+    </section>
+
+    <!-- 3. resultado -->
+    <section class="tela resultado" id="telaResultado" aria-live="polite">
+      <span class="quem" id="quem"></span>
+      <span class="numero" id="numero">ODS 00 / 17</span>
+      <h1 class="nome-ods" id="nomeOds">—</h1>
+      <p class="resumo" id="resumo"></p>
+
+      <div class="bloco-esg" id="blocoEsg">
+        <span class="rotulo">Sua tarefa</span>
+        <p class="pergunta">Em qual pilar do ESG essa ODS se encaixa melhor?</p>
+        <div class="escolhas" id="escolhas"></div>
+        <p class="provoca" id="provoca"></p>
+        <textarea class="campo" id="campoJust" maxlength="400"
+                  placeholder="Por quê? Uma ou duas frases bastam."></textarea>
+        <p class="aviso" id="avisoEsg"></p>
+        <div class="acoes"><button class="botao" id="btnEnviar" disabled>Enviar resposta</button></div>
+      </div>
+
+      <div class="confirmado" id="confirmado" style="display:none">
+        <span class="rotulo">Resposta registrada</span>
+        <p class="grande" id="escolhaFinal"></p>
+        <p class="just" id="justFinal"></p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- tela de projeção -->
+<div class="projecao">
+  <div class="proj-topo">
+    <div class="proj-chamada">
+      <span class="rotulo">Escaneie para participar</span>
+      <h2>Qual ODS<br>é a sua?</h2>
+      <div id="qr"></div>
+      <p class="url" id="urlTexto"></p>
+    </div>
+
+    <div>
+      <div class="proj-contador">
+        <div><span class="v" id="pAlunos">0</span><span class="r">Alunos</span></div>
+        <div><span class="v" id="pCobertura">0/17</span><span class="r">ODS sorteadas</span></div>
+        <div><span class="v" id="pRespostas">0</span><span class="r">Classificaram</span></div>
+      </div>
+      <div class="grade-alunos" id="gradeAlunos"></div>
+      <p class="proj-vazio" id="projVazio">Ninguém sorteou ainda.<br>Os nomes aparecem aqui conforme a turma escaneia.</p>
+    </div>
+  </div>
+</div>
+
+<script src="ods.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const CHAVE  = 'ods-esg-aluno-v1';
+const stage  = document.getElementById('stage');
+const faixas = document.getElementById('faixas');
+let SERVIDOR = false, COLETAR_ESG = true;
+let estado = { nome:'', ods:0, esg:'', justificativa:'' };
+
+/* ---------- localStorage: a ODS do aluno mora aqui ----------
+   O aparelho é a memória mais confiável que temos. O servidor pode
+   reiniciar e esquecer tudo; o celular não. Por isso gravamos a cada
+   passo e, ao abrir a página, o que está guardado vale de imediato —
+   sem esperar rede. Depois o aparelho conta ao servidor o que sabe.  */
+const gravar = () => { try{ localStorage.setItem(CHAVE, JSON.stringify(estado)); }catch(e){} };
+const lido = () => { try{ return JSON.parse(localStorage.getItem(CHAVE) || 'null'); }catch(e){ return null; } };
+
+/* ---------- montagem ---------- */
+ODS.forEach(o => {
+  const d = document.createElement('div');
+  d.className = 'faixa'; d.style.background = o.cor; d.dataset.n = o.n;
+  faixas.appendChild(d);
+});
+document.getElementById('pilaresInfo').innerHTML = PILARES.map(p => `
+  <div class="pilar-info">
+    <span class="letra">${p.letra}</span>
+    <div><span class="titulo">${p.nome}</span><span class="texto">${p.texto}</span></div>
+  </div>`).join('');
+document.getElementById('escolhas').innerHTML = PILARES.map(p => `
+  <button class="pilar" type="button" data-id="${p.id}" aria-pressed="false">
+    <span class="l">${p.letra}</span><span class="t">${p.nome}</span>
+  </button>`).join('');
+
+function abrir(id){
+  document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
+  document.getElementById(id).classList.add('ativa');
+  window.scrollTo(0,0);
+}
+function pintar(o){
+  stage.style.setProperty('--c', o.cor);
+  stage.style.setProperty('--tinta', corDaTinta(o));
+  document.querySelector('meta[name=theme-color]').content = o.cor;
+}
+function escrever(o){
+  document.getElementById('numero').textContent  = rotuloOds(o);
+  document.getElementById('nomeOds').textContent = o.nome;
+  document.getElementById('resumo').textContent  = o.resumo;
+  document.getElementById('provoca').textContent = o.pergunta;
+  faixas.querySelectorAll('.faixa').forEach(f =>
+    f.classList.toggle('ativa', Number(f.dataset.n) === o.n));
+}
+function revelar(o){
+  pintar(o); escrever(o);
+  stage.classList.add('revelado');
+  stage.classList.remove('embaralhando');
+  document.title = 'ODS ' + o.n + ' — ' + o.nome;
+  document.getElementById('quem').textContent = estado.nome || '';
+  if (estado.esg) mostrarConfirmacao();
+  else document.getElementById('blocoEsg').style.display = COLETAR_ESG ? 'block' : 'none';
+}
+function animar(alvo, aoFim){
+  abrir('telaResultado');
+  stage.classList.add('embaralhando');
+  stage.classList.remove('revelado');
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { aoFim(); return; }
+  let atraso = 55, passos = 0;
+  (function passo(){
+    const s = ODS[Math.floor(Math.random()*ODS.length)];
+    pintar(s);
+    document.getElementById('numero').textContent = rotuloOds(s);
+    passos++; atraso *= 1.16;
+    if (passos < 22) setTimeout(passo, atraso); else aoFim();
+  })();
+}
+function mostrarConfirmacao(){
+  const p = PILARES.find(x => x.id === estado.esg);
+  document.getElementById('blocoEsg').style.display = 'none';
+  document.getElementById('confirmado').style.display = 'block';
+  document.getElementById('escolhaFinal').textContent = p ? (p.letra + ' — ' + p.nome) : '';
+  document.getElementById('justFinal').textContent = estado.justificativa || '';
+}
+
+async function api(rota, corpo){
+  const r = await fetch('api/' + rota, {
+    method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(corpo)
+  });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(d.erro || 'Falha na comunicação com o servidor.');
+  return d;
+}
+
+/* ---------- fluxo ---------- */
+document.getElementById('btnComecar').addEventListener('click', () => {
+  if (SERVIDOR){ abrir('telaNome'); setTimeout(()=>document.getElementById('campoNome').focus(),120); }
+  else sortearLocal();
+});
+
+const campoNome = document.getElementById('campoNome');
+campoNome.addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); sortearNoServidor(); } });
+document.getElementById('btnSortear').addEventListener('click', sortearNoServidor);
+
+async function sortearNoServidor(){
+  const nome = campoNome.value.trim().replace(/\s+/g,' ');
+  const aviso = document.getElementById('avisoNome');
+  if (nome.split(' ').filter(Boolean).length < 2 || nome.length < 5){
+    aviso.textContent = 'Escreva nome e sobrenome.'; campoNome.focus(); return;
+  }
+  aviso.textContent = '';
+  const btn = document.getElementById('btnSortear');
+  btn.disabled = true; btn.textContent = 'Sorteando…';
+  try {
+    const r = await api('sortear', { nome });
+    estado = { nome:r.nome, ods:r.ods, esg:r.esg||'', justificativa:r.justificativa||'' };
+    gravar();
+    const o = ODS[r.ods - 1];
+    if (r.repetido){ abrir('telaResultado'); revelar(o); }
+    else animar(o, () => revelar(o));
+  } catch(e){
+    aviso.textContent = e.message;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Sortear minha ODS';
+  }
+}
+
+function sortearLocal(){
+  const o = ODS[Math.floor(Math.random()*ODS.length)];
+  estado.ods = o.n; gravar();
+  animar(o, () => revelar(o));
+}
+
+document.getElementById('escolhas').addEventListener('click', e => {
+  const b = e.target.closest('.pilar'); if (!b) return;
+  document.querySelectorAll('.pilar').forEach(x => x.setAttribute('aria-pressed', x === b));
+  document.getElementById('btnEnviar').disabled = false;
+});
+
+document.getElementById('btnEnviar').addEventListener('click', async () => {
+  const sel = document.querySelector('.pilar[aria-pressed="true"]');
+  const aviso = document.getElementById('avisoEsg');
+  if (!sel){ aviso.textContent = 'Escolha um dos três pilares.'; return; }
+  const just = document.getElementById('campoJust').value.trim();
+  if (just.length < 10){ aviso.textContent = 'Escreva ao menos uma frase justificando.'; return; }
+  aviso.textContent = '';
+  estado.esg = sel.dataset.id; estado.justificativa = just;
+  gravar();                                  // grava antes de enviar
+  const btn = document.getElementById('btnEnviar');
+  btn.disabled = true; btn.textContent = 'Enviando…';
+  try {
+    if (SERVIDOR) await api('responder', { nome:estado.nome, esg:estado.esg, justificativa:just });
+    mostrarConfirmacao();
+  } catch(e){
+    aviso.textContent = e.message;
+    btn.disabled = false; btn.textContent = 'Enviar resposta';
+  }
+});
+
+/* ---------- início ---------- */
+(async function inicio(){
+  const guardado = lido();
+  const forcada = Number(params.get('ods'));
+
+  /* 1. mostra na hora o que o aparelho já sabe */
+  if (forcada >= 1 && forcada <= 17){
+    abrir('telaResultado'); revelar(ODS[forcada-1]);
+  } else if (guardado && guardado.ods >= 1 && guardado.ods <= 17){
+    estado = guardado; abrir('telaResultado'); revelar(ODS[guardado.ods-1]);
+  }
+
+  /* 2. só depois pergunta ao servidor se ele existe */
+  try {
+    const r = await fetch('api/config', {cache:'no-store'});
+    if (r.ok){ const c = await r.json(); SERVIDOR = true; COLETAR_ESG = c.coletarEsg; }
+  } catch(e){ SERVIDOR = false; }
+
+  if (!SERVIDOR){
+    const t = document.querySelector('.identificacao');
+    if (t) t.remove();
+    return;
+  }
+
+  /* 3. devolve ao servidor a ODS guardada, caso ele tenha esquecido */
+  if (estado.nome && estado.ods){
+    try {
+      const r = await api('ressincronizar', estado);
+      if (r.ods !== estado.ods){          // servidor manda: mantém a lista coerente
+        estado = { nome:r.nome, ods:r.ods, esg:r.esg||'', justificativa:r.justificativa||'' };
+        gravar(); revelar(ODS[r.ods-1]);
+      }
+    } catch(e){ /* sem rede agora: o que está na tela continua valendo */ }
+  }
+})();
+
+/* =========================================================
+   Tela de projeção: ?qr=1
+   ========================================================= */
+if (params.get('qr') === '1'){
+  document.body.classList.add('qr');
+  const url = location.origin + location.pathname;
+  document.getElementById('urlTexto').textContent = url;
+
+  const s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+  s.onload = () => {
+    const largura = Math.min(300, Math.max(180, Math.round(window.innerWidth * 0.55)));
+    new QRCode(document.getElementById('qr'),
+      { text:url, width:largura, height:largura, correctLevel: QRCode.CorrectLevel.M });
+  };
+  s.onerror = () => document.getElementById('qr').innerHTML =
+    '<p style="font-family:var(--mono);font-size:.7rem;padding:18px;max-width:230px;line-height:1.5">' +
+    'Sem internet para gerar o QR aqui. Use o endereço abaixo em qualquer gerador de QR code.</p>';
+  document.head.appendChild(s);
+
+  const escapar = t => String(t ?? '').replace(/[&<>"]/g,
+    c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  let ultimo = '';
+
+  async function acompanhar(){
+    try {
+      const r = await fetch('api/lista', {cache:'no-store'});
+      const d = await r.json();
+      document.getElementById('pAlunos').textContent = d.atribuicoes.length;
+      document.getElementById('pCobertura').textContent = d.contagem.filter(x => x>0).length + '/17';
+      document.getElementById('pRespostas').textContent = d.atribuicoes.filter(x => x.esg).length;
+      document.getElementById('projVazio').style.display = d.atribuicoes.length ? 'none' : 'block';
+
+      const recentes = d.atribuicoes.slice().reverse();   // último a sortear aparece primeiro
+      const assinatura = recentes.map(x => x.nome + x.ods + x.esg).join('|');
+      if (assinatura === ultimo) return;
+      ultimo = assinatura;
+
+      document.getElementById('gradeAlunos').innerHTML = recentes.map(x => {
+        const o = ODS[x.ods - 1];
+        return `<div class="cartao-aluno">
+          <span class="num" style="background:${o.cor}">${o.n}</span>
+          <span class="txt">
+            <span class="aluno">${escapar(x.nome)}</span>
+            <span class="ods">${escapar(o.nome)}${x.esg ? ' · ' + x.esg : ''}</span>
+          </span>
+        </div>`;
+      }).join('');
+    } catch(e){
+      document.getElementById('projVazio').textContent = 'Servidor fora do ar.';
+      document.getElementById('projVazio').style.display = 'block';
+    }
+  }
+  acompanhar();
+  setInterval(acompanhar, 3000);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: sorteio-ods
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: CHAVE
+        sync: false        # você define o valor no painel do Render
+      - key: NODE_VERSION
+        value: "22"

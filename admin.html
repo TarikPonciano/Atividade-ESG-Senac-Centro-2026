@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Administração — ODS e ESG</title>
+<meta name="theme-color" content="#F7F5F1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F0D0B; --paper:#F7F5F1; --linha:#D8D3C9; --alerta:#A21942;
+    --display:'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --mono:'Space Mono', ui-monospace, 'Courier New', monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--display);background:var(--paper);color:var(--ink);
+       -webkit-font-smoothing:antialiased;padding-bottom:70px}
+  .faixas{display:flex;height:10px}
+  .faixa{flex:1 1 0}
+  .capa{max-width:1180px;margin:0 auto;padding:26px clamp(16px,4vw,36px) 0}
+
+  .rotulo{font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;opacity:.6;display:block}
+  h1{font-weight:900;text-transform:uppercase;letter-spacing:-.035em;font-size:clamp(1.7rem,4.6vw,2.4rem);line-height:.95;margin:8px 0 6px}
+  h2{font-weight:900;text-transform:uppercase;letter-spacing:-.02em;font-size:1.05rem;margin-bottom:6px}
+  .sub{font-weight:500;opacity:.7;font-size:.92rem;line-height:1.5;max-width:56ch}
+
+  .btn{font-family:var(--display);font-weight:900;text-transform:uppercase;font-size:.74rem;letter-spacing:.05em;
+       background:var(--ink);color:var(--paper);border:0;border-radius:2px;padding:12px 17px;cursor:pointer;
+       text-decoration:none;display:inline-block}
+  .btn.vazio{background:transparent;color:var(--ink);border:2px solid var(--ink);padding:10px 15px}
+  .btn.perigo{background:transparent;color:var(--alerta);border:2px solid var(--alerta);padding:10px 15px}
+  .btn:hover{opacity:.85}
+  .btn:disabled{opacity:.35;cursor:not-allowed}
+  .btn:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+
+  input,textarea,select{font-family:var(--display);font-size:.95rem;color:var(--ink);background:#fff;
+       border:2px solid var(--ink);border-radius:2px;padding:11px 12px;width:100%}
+  textarea{resize:vertical;min-height:130px;line-height:1.6}
+  ::placeholder{opacity:.4}
+
+  /* porta de entrada */
+  .porta{max-width:380px;margin:12vh auto;text-align:center}
+  .porta h1{margin-bottom:14px}
+  .porta input{text-align:center;margin:20px 0 14px;font-family:var(--mono)}
+  .erro{color:var(--alerta);font-family:var(--mono);font-size:.76rem;min-height:1.2em;margin-bottom:12px}
+
+  #console{display:none}
+  body.dentro #porta{display:none}
+  body.dentro #console{display:block}
+
+  .placar{display:flex;flex-wrap:wrap;gap:30px;padding:16px 0;border-top:2px solid var(--ink);border-bottom:1px solid var(--linha);margin:18px 0 26px}
+  .metrica .valor{font-family:var(--mono);font-size:1.9rem;line-height:1;display:block}
+  .metrica .nome{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;opacity:.65;margin-top:6px;display:block;font-weight:700}
+
+  .caixa{border:2px solid var(--ink);border-radius:2px;padding:20px;margin-bottom:30px}
+  .campos{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start;margin-top:14px}
+  @media(max-width:640px){.campos{grid-template-columns:1fr}}
+
+  .recibo{margin-top:16px;border-top:1px solid var(--linha);padding-top:14px;display:none}
+  .recibo.tem{display:block}
+  .linha-recibo{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:.92rem;flex-wrap:wrap}
+  .linha-recibo.falhou{color:var(--alerta);font-family:var(--mono);font-size:.8rem}
+
+  .chip{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:.85rem;line-height:1.2}
+  .bolinha{width:23px;height:23px;border-radius:2px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+           font-family:var(--mono);font-size:.6rem;color:#fff}
+
+  .barra{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+  .barra input[type=search]{max-width:280px}
+  .marca{font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;
+         border:1px solid var(--linha);border-radius:2px;padding:2px 5px;opacity:.7}
+
+  table{width:100%;border-collapse:collapse}
+  th{text-align:left;font-family:var(--mono);font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;
+     opacity:.6;padding:0 8px 9px 0;border-bottom:2px solid var(--ink);font-weight:700}
+  td{padding:9px 8px 9px 0;border-bottom:1px solid var(--linha);vertical-align:middle;font-size:.9rem}
+  td.n{font-family:var(--mono);font-size:.7rem;opacity:.45;width:32px}
+  td.aluno{font-weight:700}
+  select.esg{width:auto;min-width:72px;padding:6px 8px;font-family:var(--mono);font-size:.76rem}
+  input.just{border:1px solid var(--linha);padding:7px 9px;font-size:.84rem;font-weight:500;background:transparent}
+  input.just:hover{border-color:var(--ink)}
+  .acao{background:none;border:0;font-family:var(--mono);font-size:.66rem;cursor:pointer;opacity:.4;color:var(--ink);padding:4px}
+  .acao:hover{opacity:1}
+  .acao.rem:hover{color:var(--alerta)}
+  .vazio-msg{padding:36px 0;font-family:var(--mono);font-size:.8rem;opacity:.5}
+
+  /* ---------- celular: a tabela vira uma pilha de cartões ---------- */
+  @media(max-width:780px){
+    .capa{padding-left:14px;padding-right:14px}
+    table,tbody,tr,td{display:block;width:100%}
+    thead{display:none}
+    tr{border:2px solid var(--ink);border-radius:2px;padding:12px 14px;margin-bottom:12px}
+    td{border:0;padding:6px 0}
+    td.n{display:none}
+    td[data-r]::before{
+      content:attr(data-r);display:block;margin-bottom:4px;
+      font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;
+      text-transform:uppercase;opacity:.5;
+    }
+    td.aluno{font-size:1.05rem;padding-bottom:10px}
+    select.esg,input.just{width:100%}
+    .barra input[type=search]{max-width:none}
+    .barra .btn{flex:1 1 auto;text-align:center}
+    .campos{grid-template-columns:1fr}
+    input,textarea,select{font-size:16px}   /* impede o zoom automático do iOS */
+    .placar{gap:20px 26px}
+    .rodape .btn{flex:1 1 auto;text-align:center}
+    .status{width:100%;margin:8px 0 0;text-align:right}
+  }
+  .rodape{display:flex;gap:10px;flex-wrap:wrap;margin-top:30px;padding-top:22px;border-top:2px solid var(--ink);align-items:center}
+  .status{font-family:var(--mono);font-size:.68rem;opacity:.5;margin-left:auto}
+</style>
+</head>
+<body>
+
+<div class="faixas" id="faixas"></div>
+
+<!-- entrada -->
+<div class="capa" id="porta">
+  <div class="porta">
+    <span class="rotulo">Área do professor</span>
+    <h1>Administração</h1>
+    <p class="sub" style="margin:0 auto">Informe a chave definida no servidor.</p>
+    <input id="chave" type="password" placeholder="chave" autocomplete="current-password">
+    <p class="erro" id="erroChave"></p>
+    <button class="btn" id="btnEntrar" style="width:100%">Entrar</button>
+  </div>
+</div>
+
+<!-- console -->
+<div class="capa" id="console">
+  <span class="rotulo">Área do professor</span>
+  <h1>Administração</h1>
+
+  <div class="placar">
+    <div class="metrica"><span class="valor" id="mAlunos">0</span><span class="nome">Alunos</span></div>
+    <div class="metrica"><span class="valor" id="mCobertura">0/17</span><span class="nome">ODS sorteadas</span></div>
+    <div class="metrica"><span class="valor" id="mRespostas">0</span><span class="nome">Já classificaram</span></div>
+    <div class="metrica"><span class="valor" id="mPendentes">0</span><span class="nome">Sem resposta</span></div>
+    <div class="metrica"><span class="valor" id="mBaralho">17</span><span class="nome">Restam na rodada</span></div>
+  </div>
+
+  <!-- cadastro -->
+  <section class="caixa">
+    <h2>Cadastrar aluno</h2>
+    <p class="sub">Um nome por linha. Serve tanto para quem não conseguiu escanear quanto para lançar a turma inteira de uma vez. Quem já foi cadastrado mantém a ODS que recebeu — e se depois escanear o QR e digitar o mesmo nome, cai na mesma ODS.</p>
+    <div class="campos">
+      <textarea id="nomes" placeholder="Maria Souza Lima&#10;João Pedro Alves&#10;Ana Beatriz Rocha"></textarea>
+      <button class="btn" id="btnCadastrar">Cadastrar<br>e sortear</button>
+    </div>
+    <div class="recibo" id="recibo"></div>
+  </section>
+
+  <!-- lista -->
+  <section>
+    <h2>Alunos que já sortearam</h2>
+    <div class="barra" style="margin-top:12px">
+      <input type="search" id="filtro" placeholder="Filtrar por nome ou ODS">
+      <button class="btn vazio" id="btnPendentes">Só quem não respondeu</button>
+      <a class="btn vazio" href="painel.html" target="_blank">Abrir painel de projeção</a>
+    </div>
+    <table>
+      <thead><tr>
+        <th style="width:32px">#</th><th>Aluno</th><th>ODS</th><th style="width:96px">ESG</th>
+        <th>Justificativa</th><th style="width:70px">Origem</th><th style="width:120px"></th>
+      </tr></thead>
+      <tbody id="corpo"></tbody>
+    </table>
+    <p class="vazio-msg" id="vazio">Nenhum aluno ainda.</p>
+  </section>
+
+  <div class="rodape">
+    <a class="btn" href="api/csv">Baixar CSV</a>
+    <button class="btn vazio" onclick="window.print()">Imprimir</button>
+    <button class="btn perigo" id="btnReiniciar">Reiniciar turma</button>
+    <span class="status" id="status"></span>
+  </div>
+</div>
+
+<script src="ods.js"></script>
+<script>
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const PILAR_NOME = Object.fromEntries(PILARES.map(p => [p.id, p.nome]));
+let CHAVE = sessionStorage.getItem('ods-chave') || '';
+let somentePendentes = false;
+let ultimoDesenho = '';
+
+document.getElementById('faixas').innerHTML =
+  ODS.map(o => `<div class="faixa" style="background:${o.cor}"></div>`).join('');
+
+async function post(rota, corpo){
+  const r = await fetch('api/' + rota, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ ...corpo, chave: CHAVE })
+  });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(d.erro || 'Falha na comunicação com o servidor.');
+  return d;
+}
+
+/* ---------- entrada ---------- */
+const campoChave = document.getElementById('chave');
+campoChave.addEventListener('keydown', e => { if (e.key === 'Enter') entrar(); });
+document.getElementById('btnEntrar').addEventListener('click', entrar);
+
+async function entrar(){
+  const erro = document.getElementById('erroChave');
+  CHAVE = campoChave.value;
+  try {
+    await post('admin/entrar', {});
+    sessionStorage.setItem('ods-chave', CHAVE);
+    document.body.classList.add('dentro');
+    atualizar();
+    setInterval(atualizar, 3000);
+  } catch(e){ erro.textContent = e.message; CHAVE = ''; }
+}
+if (CHAVE) entrar();   // já autenticado nesta aba
+
+/* ---------- cadastro ---------- */
+document.getElementById('btnCadastrar').addEventListener('click', async () => {
+  const campo = document.getElementById('nomes');
+  const nomes = campo.value.split('\n').map(s => s.trim()).filter(Boolean);
+  if (!nomes.length) { campo.focus(); return; }
+  const btn = document.getElementById('btnCadastrar');
+  btn.disabled = true; btn.textContent = 'Sorteando…';
+  try {
+    const { resultados } = await post('admin/cadastrar', { nomes });
+    document.getElementById('recibo').className = 'recibo tem';
+    document.getElementById('recibo').innerHTML = resultados.map(r => {
+      if (r.erro) return `<div class="linha-recibo falhou">✕ ${esc(r.nome)} — ${esc(r.erro)}</div>`;
+      const o = ODS[r.ods - 1];
+      return `<div class="linha-recibo">
+        <span class="chip"><span class="bolinha" style="background:${o.cor}">${o.n}</span>${esc(o.nome)}</span>
+        <strong>${esc(r.nome)}</strong>
+        ${r.repetido ? '<span class="marca">já tinha</span>' : ''}
+        <a class="acao" href="index.html?ods=${r.ods}" target="_blank" style="opacity:.6">mostrar ao aluno ↗</a>
+      </div>`;
+    }).join('');
+    campo.value = '';
+    ultimoDesenho = ''; atualizar();
+  } catch(e){
+    document.getElementById('recibo').className = 'recibo tem';
+    document.getElementById('recibo').innerHTML =
+      `<div class="linha-recibo falhou">✕ ${esc(e.message)}</div>`;
+  } finally {
+    btn.disabled = false; btn.innerHTML = 'Cadastrar<br>e sortear';
+  }
+});
+
+/* ---------- lista ---------- */
+document.getElementById('filtro').addEventListener('input', () => { ultimoDesenho = ''; desenhar(); });
+document.getElementById('btnPendentes').addEventListener('click', e => {
+  somentePendentes = !somentePendentes;
+  e.target.classList.toggle('vazio', !somentePendentes);
+  ultimoDesenho = ''; desenhar();
+});
+
+let dadosAtuais = { atribuicoes: [], contagem: [], restamNoBaralho: 17 };
+
+function desenhar(){
+  const d = dadosAtuais;
+  const a = d.atribuicoes;
+  document.getElementById('mAlunos').textContent = a.length;
+  document.getElementById('mCobertura').textContent = d.contagem.filter(x => x > 0).length + '/17';
+  document.getElementById('mRespostas').textContent = a.filter(x => x.esg).length;
+  document.getElementById('mPendentes').textContent = a.filter(x => !x.esg).length;
+  document.getElementById('mBaralho').textContent = d.restamNoBaralho;
+
+  const termo = document.getElementById('filtro').value.trim().toLowerCase();
+  const visiveis = a.filter(x => {
+    if (somentePendentes && x.esg) return false;
+    if (!termo) return true;
+    const o = ODS[x.ods - 1];
+    return x.nome.toLowerCase().includes(termo)
+        || o.nome.toLowerCase().includes(termo)
+        || String(o.n) === termo;
+  });
+
+  const assinatura = JSON.stringify(visiveis);
+  if (assinatura === ultimoDesenho) return;          // nada mudou, não redesenha
+  if (document.activeElement && document.activeElement.classList.contains('editando')) return;
+  ultimoDesenho = assinatura;
+
+  document.getElementById('vazio').style.display = visiveis.length ? 'none' : 'block';
+  document.getElementById('vazio').textContent =
+    a.length ? 'Nenhum aluno com esse filtro.' : 'Nenhum aluno ainda.';
+
+  document.getElementById('corpo').innerHTML = visiveis.map((x, i) => {
+    const o = ODS[x.ods - 1];
+    return `<tr data-nome="${esc(x.nome)}">
+      <td class="n">${String(i+1).padStart(2,'0')}</td>
+      <td class="aluno">${esc(x.nome)}</td>
+      <td data-r="ODS"><span class="chip"><span class="bolinha" style="background:${o.cor}">${o.n}</span>${esc(o.nome)}</span></td>
+      <td data-r="Pilar ESG">
+        <select class="esg editando">
+          <option value=""${x.esg?'':' selected'}>—</option>
+          ${PILARES.map(p => `<option value="${p.id}"${x.esg===p.id?' selected':''}>${p.letra}</option>`).join('')}
+        </select>
+      </td>
+      <td data-r="Justificativa"><input class="just editando" value="${esc(x.justificativa)}" placeholder="anotar…" maxlength="400"></td>
+      <td data-r="Origem"><span class="marca">${x.origem === 'professor' ? 'manual' : x.origem === 'recuperado' ? 'recuperado' : 'QR'}</span></td>
+      <td style="text-align:right">
+        <a class="acao" href="index.html?ods=${x.ods}" target="_blank">ver ↗</a>
+        <button class="acao rem">remover</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function atualizar(){
+  try {
+    const r = await fetch('api/lista', {cache:'no-store'});
+    dadosAtuais = await r.json();
+    desenhar();
+    document.getElementById('status').textContent =
+      'atualizado ' + new Date().toLocaleTimeString('pt-BR');
+  } catch(e){
+    document.getElementById('status').textContent = 'servidor fora do ar';
+  }
+}
+
+/* edição inline de ESG e justificativa */
+const corpo = document.getElementById('corpo');
+async function gravarLinha(tr){
+  const nome = tr.dataset.nome;
+  const esgSel = tr.querySelector('select.esg').value;
+  const just = tr.querySelector('input.just').value;
+  try {
+    await post('admin/esg', { nome, esg: esgSel, justificativa: just });
+    ultimoDesenho = ''; atualizar();
+  } catch(e){ alert(e.message); }
+}
+corpo.addEventListener('change', e => {
+  if (e.target.matches('select.esg')) gravarLinha(e.target.closest('tr'));
+});
+corpo.addEventListener('blur', e => {
+  if (e.target.matches('input.just')) gravarLinha(e.target.closest('tr'));
+}, true);
+corpo.addEventListener('keydown', e => {
+  if (e.target.matches('input.just') && e.key === 'Enter') e.target.blur();
+});
+
+/* remover */
+corpo.addEventListener('click', async e => {
+  const b = e.target.closest('.acao.rem'); if (!b) return;
+  const tr = b.closest('tr'), nome = tr.dataset.nome;
+  if (!confirm(`Remover ${nome}? A ODS dele volta para o baralho.`)) return;
+  try { await post('remover', { nome }); ultimoDesenho = ''; atualizar(); }
+  catch(err){ alert(err.message); }
+});
+
+/* reiniciar */
+document.getElementById('btnReiniciar').addEventListener('click', async () => {
+  if (!confirm('Apagar todos os sorteios e recomeçar?\nUma cópia dos dados fica guardada na pasta "dados".')) return;
+  try { await post('reiniciar', {}); ultimoDesenho = ''; atualizar(); }
+  catch(e){ alert(e.message); }
+});
+</script>
+</body>
+</html>
