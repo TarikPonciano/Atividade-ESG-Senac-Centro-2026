@@ -1,0 +1,13 @@
+{
+  "name": "sorteio-ods",
+  "version": "1.0.0",
+  "description": "Sorteio das 17 ODS da ONU com classificação ESG",
+  "main": "server.js",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
