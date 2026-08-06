@@ -163,8 +163,8 @@
     </div>
     <table>
       <thead><tr>
-        <th style="width:32px">#</th><th>Aluno</th><th>ODS</th><th style="width:96px">ESG</th>
-        <th>Justificativa</th><th style="width:70px">Origem</th><th style="width:120px"></th>
+        <th style="width:32px">#</th><th>Aluno</th><th>ODS</th><th style="width:90px">ESG</th>
+        <th>Justificativa</th><th>Resposta</th><th style="width:70px">Origem</th><th style="width:110px"></th>
       </tr></thead>
       <tbody id="corpo"></tbody>
     </table>
@@ -275,6 +275,8 @@ function desenhar(){
     const o = ODS[x.ods - 1];
     return x.nome.toLowerCase().includes(termo)
         || o.nome.toLowerCase().includes(termo)
+        || (x.justificativa || '').toLowerCase().includes(termo)
+        || (x.resposta || '').toLowerCase().includes(termo)
         || String(o.n) === termo;
   });
 
@@ -299,7 +301,8 @@ function desenhar(){
           ${PILARES.map(p => `<option value="${p.id}"${x.esg===p.id?' selected':''}>${p.letra}</option>`).join('')}
         </select>
       </td>
-      <td data-r="Justificativa"><input class="just editando" value="${esc(x.justificativa)}" placeholder="anotar…" maxlength="400"></td>
+      <td data-r="Justificativa do pilar"><input class="just editando" data-campo="justificativa" value="${esc(x.justificativa)}" placeholder="anotar…" maxlength="600"></td>
+      <td data-r="Resposta da pergunta"><input class="just editando" data-campo="resposta" value="${esc(x.resposta || '')}" placeholder="anotar…" maxlength="600"></td>
       <td data-r="Origem"><span class="marca">${x.origem === 'professor' ? 'manual' : x.origem === 'recuperado' ? 'recuperado' : 'QR'}</span></td>
       <td style="text-align:right">
         <a class="acao" href="/?ods=${x.ods}" target="_blank">ver ↗</a>
@@ -326,9 +329,10 @@ const corpo = document.getElementById('corpo');
 async function gravarLinha(tr){
   const nome = tr.dataset.nome;
   const esgSel = tr.querySelector('select.esg').value;
-  const just = tr.querySelector('input.just').value;
+  const just = tr.querySelector('input.just[data-campo="justificativa"]').value;
+  const resp = tr.querySelector('input.just[data-campo="resposta"]').value;
   try {
-    await post('admin/esg', { nome, esg: esgSel, justificativa: just });
+    await post('admin/esg', { nome, esg: esgSel, justificativa: just, resposta: resp });
     ultimoDesenho = ''; atualizar();
   } catch(e){ alert(e.message); }
 }

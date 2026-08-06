@@ -92,11 +92,12 @@ function registrar(nome, origem){
 
   const jaTem = acharAluno(limpo);
   if (jaTem) return { nome: jaTem.nome, ods: jaTem.ods, esg: jaTem.esg,
-                      justificativa: jaTem.justificativa, repetido: true };
+                      justificativa: jaTem.justificativa, resposta: jaTem.resposta,
+                      repetido: true };
 
   const registro = {
     chave: normalizar(limpo), nome: limpo, ods: proximaOds(),
-    esg: '', justificativa: '', origem: origem || 'aluno',
+    esg: '', justificativa: '', resposta: '', origem: origem || 'aluno',
     em: new Date().toISOString()
   };
   dados.atribuicoes.push(registro);
@@ -215,7 +216,9 @@ const servidor = http.createServer(async (req, res) => {
         return json(res, 400, { erro: 'Use E, S ou G.' });
       aluno.esg = corpo.esg || '';
       if (typeof corpo.justificativa === 'string')
-        aluno.justificativa = corpo.justificativa.trim().slice(0, 400);
+        aluno.justificativa = corpo.justificativa.trim().slice(0, 600);
+      if (typeof corpo.resposta === 'string')
+        aluno.resposta = corpo.resposta.trim().slice(0, 600);
       aluno.respondidoEm = new Date().toISOString();
       salvar();
       return json(res, 200, { ok: true });
@@ -223,12 +226,13 @@ const servidor = http.createServer(async (req, res) => {
 
     /* --- resposta ESG --- */
     if (rota === '/api/responder' && req.method === 'POST'){
-      const { nome, esg, justificativa } = await lerCorpo(req);
+      const { nome, esg, justificativa, resposta } = await lerCorpo(req);
       const aluno = acharAluno(nome);
       if (!aluno) return json(res, 404, { erro: 'Não encontrei esse nome. Sorteie sua ODS primeiro.' });
       if (!['E','S','G'].includes(esg)) return json(res, 400, { erro: 'Escolha E, S ou G.' });
       aluno.esg = esg;
-      aluno.justificativa = String(justificativa || '').trim().slice(0, 400);
+      aluno.justificativa = String(justificativa || '').trim().slice(0, 600);
+      aluno.resposta = String(resposta || '').trim().slice(0, 600);
       aluno.respondidoEm = new Date().toISOString();
       salvar();
       console.log(`  ✓ ${aluno.nome} classificou a ODS ${aluno.ods} como ${esg}`);
@@ -241,7 +245,7 @@ const servidor = http.createServer(async (req, res) => {
        lista se remonta sozinha. O servidor sempre tem a palavra final:
        se ele já conhece o aluno, é o registro dele que vale.            */
     if (rota === '/api/ressincronizar' && req.method === 'POST'){
-      const { nome, ods, esg, justificativa } = await lerCorpo(req);
+      const { nome, ods, esg, justificativa, resposta } = await lerCorpo(req);
       const limpo = limparNome(nome);
       const numero = Number(ods);
       if (!limpo || !(numero >= 1 && numero <= TOTAL_ODS))
@@ -250,7 +254,8 @@ const servidor = http.createServer(async (req, res) => {
       const jaTem = acharAluno(limpo);
       if (jaTem)
         return json(res, 200, { nome: jaTem.nome, ods: jaTem.ods, esg: jaTem.esg,
-                                justificativa: jaTem.justificativa, recuperado: false });
+                                justificativa: jaTem.justificativa, resposta: jaTem.resposta,
+                                recuperado: false });
 
       /* Depois de um restart o baralho está vazio. Enche antes de
          descontar, senão essa ODS poderia ser sorteada de novo. */
@@ -262,12 +267,13 @@ const servidor = http.createServer(async (req, res) => {
       dados.atribuicoes.push({
         chave: normalizar(limpo), nome: limpo, ods: numero,
         esg: ['E','S','G'].includes(esg) ? esg : '',
-        justificativa: String(justificativa || '').trim().slice(0, 400),
+        justificativa: String(justificativa || '').trim().slice(0, 600),
+        resposta: String(resposta || '').trim().slice(0, 600),
         origem: 'recuperado', em: new Date().toISOString()
       });
       salvar();
       console.log(`  ↺ ${limpo} devolveu a ODS ${numero} ao servidor`);
-      return json(res, 200, { nome: limpo, ods: numero, esg, justificativa, recuperado: true });
+      return json(res, 200, { nome: limpo, ods: numero, esg, justificativa, resposta, recuperado: true });
     }
 
     /* --- lista para os painéis --- */
@@ -285,9 +291,9 @@ const servidor = http.createServer(async (req, res) => {
     /* --- CSV --- */
     if (rota === '/api/csv'){
       const esc = v => '"' + String(v ?? '').replace(/"/g, '""') + '"';
-      const linhas = [['nome','ods','esg','justificativa','sorteado_em'].join(';')];
+      const linhas = [['nome','ods','esg','justificativa_esg','resposta_pergunta','sorteado_em'].join(';')];
       dados.atribuicoes.forEach(a => linhas.push(
-        [a.nome, a.ods, a.esg, a.justificativa, a.em].map(esc).join(';')));
+        [a.nome, a.ods, a.esg, a.justificativa, a.resposta, a.em].map(esc).join(';')));
       res.writeHead(200, {
         'Content-Type': 'text/csv; charset=utf-8',
         'Content-Disposition': 'attachment; filename="ods-turma.csv"'

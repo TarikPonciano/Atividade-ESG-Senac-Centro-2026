@@ -54,8 +54,9 @@ a mesma ODS — não há como sortear duas vezes.
   resultado já na ODS certa.
 - **Vê a lista completa** com filtro por nome ou ODS, e um botão para isolar
   quem ainda não classificou.
-- **Anota a resposta no lugar do aluno**: o pilar ESG e a justificativa são
-  editáveis direto na tabela e salvam sozinhos.
+- **Anota as respostas no lugar do aluno**: o pilar ESG, a justificativa e a
+  resposta da pergunta são editáveis direto na tabela e salvam sozinhos.
+  O filtro procura também dentro dos textos escritos pelos alunos.
 - Remove um aluno (a ODS volta para o baralho), reinicia a turma e baixa o CSV.
 
 Cada aluno aparece marcado como `QR` ou `manual`, conforme a origem.
@@ -69,6 +70,13 @@ mas não o quê — só quando você aperta **Revelar E · S · G** os selos apa
 em todos os cartões de uma vez. Aperte de novo para esconder. A escolha vale
 só naquela aba e some ao fechar; se você recarregar a projeção no meio da
 aula, ela volta escondida.
+
+**Clique num cartão** para abrir o detalhe daquele aluno: o pilar que escolheu,
+a justificativa, a pergunta que recebeu e a resposta que deu. Cartões de quem
+ainda não respondeu ficam desabilitados. O detalhe mostra tudo, inclusive o
+pilar — mesmo com os selos escondidos. Se a tela estiver projetada, abrir um
+cartão revela aquela resposta para a turma inteira; use isso a favor, chamando
+o aluno para defender o que escreveu.
 
 No celular os dois blocos empilham e o botão ocupa a largura toda.
 
@@ -88,6 +96,18 @@ CHAVE=outracoisa PORTA=8080 node server.js
 
 Ficam em `dados/sorteio.json`, em texto puro. Ao reiniciar a turma, uma
 cópia com a data no nome é guardada na mesma pasta antes de limpar.
+
+## O que o aluno responde
+
+São duas perguntas, ambas obrigatórias:
+
+1. **Em qual pilar do ESG essa ODS se encaixa?** Escolhe E, S ou G e justifica
+   por escrito.
+2. **A pergunta contextualizada da ODS**, definida no campo `pergunta` do
+   `ods.js`. Cada ODS tem a sua — "para onde foi o lixo que você produziu
+   ontem?", "quanto do que você almoçou hoje foi produzido no Ceará?".
+
+As duas ficam no CSV, nas colunas `justificativa_esg` e `resposta_pergunta`.
 
 ## A ODS do aluno mora no celular dele
 

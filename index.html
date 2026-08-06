@@ -95,7 +95,6 @@
   .pilar .l{font-family:var(--mono);font-size:1.6rem;line-height:1;display:block}
   .pilar .t{font-weight:900;text-transform:uppercase;font-size:.62rem;letter-spacing:.03em;display:block;margin-top:6px}
   .pilar[aria-pressed="true"]{background:var(--tinta);color:var(--c)}
-  .provoca{font-weight:500;font-size:.9rem;line-height:1.5;max-width:38ch;opacity:.75;margin-bottom:16px}
 
   .confirmado{margin-top:32px;padding-top:22px;border-top:2px solid currentColor}
   .confirmado .grande{
@@ -159,7 +158,48 @@
     display:flex;gap:11px;align-items:center;min-width:0;
     border:1px solid #D8D3C9;border-radius:2px;padding:10px 12px;background:#fff;
     animation:entra 400ms ease both;
+    width:100%;text-align:left;font-family:var(--display);color:var(--ink);
+    cursor:pointer;transition:border-color 140ms ease, transform 140ms ease;
   }
+  .cartao-aluno:hover{border-color:var(--ink);transform:translateY(-1px)}
+  .cartao-aluno:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+  .cartao-aluno[disabled]{cursor:default;opacity:.75}
+  .cartao-aluno[disabled]:hover{border-color:#D8D3C9;transform:none}
+
+  /* ---------- folha de detalhe ---------- */
+  .folha{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end;justify-content:center}
+  @media(min-width:700px){.folha{align-items:center}}
+  .folha[hidden]{display:none}
+  .folha-fundo{position:absolute;inset:0;background:rgba(15,13,11,.55);animation:apaga 200ms ease both}
+  @keyframes apaga{from{opacity:0}to{opacity:1}}
+  .folha-caixa{
+    position:relative;background:var(--paper);color:var(--ink);
+    width:100%;max-width:620px;max-height:88dvh;overflow-y:auto;
+    padding:26px 22px calc(26px + env(safe-area-inset-bottom));
+    border:3px solid var(--ink);border-radius:2px 2px 0 0;
+    animation:sobe 260ms cubic-bezier(.2,.8,.2,1) both;
+  }
+  @media(min-width:700px){.folha-caixa{border-radius:2px;padding:30px 32px}}
+  @keyframes sobe{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+  .folha-x{
+    position:absolute;top:14px;right:14px;background:none;border:0;cursor:pointer;
+    font-size:1.1rem;line-height:1;color:var(--ink);opacity:.5;padding:6px;
+  }
+  .folha-x:hover{opacity:1}
+  .folha-caixa h3{
+    font-weight:900;text-transform:uppercase;letter-spacing:-.03em;
+    font-size:clamp(1.4rem,5.5vw,2rem);line-height:1;margin:6px 0 16px;padding-right:30px;
+  }
+  .f-ods{display:flex;gap:10px;align-items:center;font-weight:700;font-size:.95rem;margin-bottom:20px}
+  .f-num{
+    width:30px;height:30px;flex:0 0 auto;border-radius:2px;color:#fff;
+    display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.76rem;
+  }
+  .f-bloco{border-top:2px solid var(--ink);padding-top:14px;margin-top:18px}
+  .f-destaque{font-weight:900;text-transform:uppercase;font-size:1.1rem;letter-spacing:-.02em;margin:8px 0 8px}
+  .f-pergunta{font-weight:900;font-size:1rem;line-height:1.25;margin:8px 0 8px;max-width:40ch}
+  .f-texto{font-weight:500;font-size:.95rem;line-height:1.55;max-width:52ch;white-space:pre-wrap}
+  .f-texto:empty::before{content:'Ainda não respondeu.';opacity:.45;font-style:italic}
   @keyframes entra{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
   .cartao-aluno .num{
     width:34px;height:34px;flex:0 0 auto;border-radius:2px;color:#fff;
@@ -230,21 +270,29 @@
       </div>
 
       <div class="bloco-esg" id="blocoEsg">
-        <span class="rotulo">Agora é com você</span>
+        <span class="rotulo">Pergunta 1 de 2</span>
         <p class="pergunta">Essa ODS é E, S ou G?</p>
         <div class="escolhas" id="escolhas"></div>
-        <p class="provoca" id="provoca"></p>
         <p class="dica">Várias ODS cabem em mais de um pilar. Não existe gabarito aqui — o que vale é o seu argumento.</p>
-        <textarea class="campo" id="campoJust" maxlength="400"
-                  placeholder="Explica seu raciocínio. Duas frases bastam."></textarea>
+        <textarea class="campo" id="campoJust" maxlength="600"
+                  placeholder="Por que esse pilar? Duas frases bastam."></textarea>
+
+        <span class="rotulo" style="margin-top:26px">Pergunta 2 de 2</span>
+        <p class="pergunta" id="provoca"></p>
+        <p class="dica">Essa é sobre a sua ODS no mundo real. Responde do seu jeito, com o que você conhece.</p>
+        <textarea class="campo" id="campoResposta" maxlength="600"
+                  placeholder="Sua resposta."></textarea>
+
         <p class="aviso" id="avisoEsg"></p>
-        <div class="acoes"><button class="botao" id="btnEnviar" disabled>Mandar resposta</button></div>
+        <div class="acoes"><button class="botao" id="btnEnviar">Mandar respostas</button></div>
       </div>
 
       <div class="confirmado" id="confirmado" style="display:none">
         <span class="rotulo">Anotado — segura essa opinião</span>
         <p class="grande" id="escolhaFinal"></p>
         <p class="just" id="justFinal"></p>
+        <span class="rotulo" style="margin-top:22px" id="rotPergFinal"></span>
+        <p class="just" id="respFinal" style="margin-top:6px"></p>
       </div>
     </section>
 
@@ -274,6 +322,30 @@
   </div>
 </div>
 
+<!-- detalhe de um aluno, aberto ao clicar no cartão da projeção -->
+<div class="folha" id="folha" hidden>
+  <div class="folha-fundo" data-fechar></div>
+  <div class="folha-caixa" role="dialog" aria-modal="true" aria-labelledby="fAluno">
+    <button class="folha-x" id="folhaFechar" aria-label="Fechar">✕</button>
+    <span class="rotulo" id="fOdsRotulo"></span>
+    <h3 id="fAluno"></h3>
+    <div class="f-ods">
+      <span class="f-num" id="fNum"></span>
+      <span id="fOdsNome"></span>
+    </div>
+    <div class="f-bloco">
+      <span class="rotulo">Pilar escolhido</span>
+      <p class="f-destaque" id="fEsg"></p>
+      <p class="f-texto" id="fJust"></p>
+    </div>
+    <div class="f-bloco">
+      <span class="rotulo">Pergunta</span>
+      <p class="f-pergunta" id="fPergunta"></p>
+      <p class="f-texto" id="fResposta"></p>
+    </div>
+  </div>
+</div>
+
 <script src="ods.js"></script>
 <script>
 const params = new URLSearchParams(location.search);
@@ -281,7 +353,7 @@ const CHAVE  = 'ods-esg-aluno-v1';
 const stage  = document.getElementById('stage');
 const faixas = document.getElementById('faixas');
 let SERVIDOR = false, COLETAR_ESG = true;
-let estado = { nome:'', ods:0, esg:'', justificativa:'' };
+let estado = { nome:'', ods:0, esg:'', justificativa:'', resposta:'' };
 
 /* ---------- localStorage: a ODS do aluno mora aqui ----------
    O aparelho é a memória mais confiável que temos. O servidor pode
@@ -357,6 +429,9 @@ function mostrarConfirmacao(){
   document.getElementById('confirmado').style.display = 'block';
   document.getElementById('escolhaFinal').textContent = p ? (p.letra + ' — ' + p.nome) : '';
   document.getElementById('justFinal').textContent = estado.justificativa || '';
+  const o = ODS[estado.ods - 1];
+  document.getElementById('rotPergFinal').textContent = o ? o.pergunta : '';
+  document.getElementById('respFinal').textContent = estado.resposta || '';
 }
 
 async function api(rota, corpo){
@@ -389,7 +464,7 @@ async function sortearNoServidor(){
   btn.disabled = true; btn.textContent = 'Sorteando…';
   try {
     const r = await api('sortear', { nome });
-    estado = { nome:r.nome, ods:r.ods, esg:r.esg||'', justificativa:r.justificativa||'' };
+    estado = { nome:r.nome, ods:r.ods, esg:r.esg||'', justificativa:r.justificativa||'', resposta:r.resposta||'' };
     gravar();
     const o = ODS[r.ods - 1];
     if (r.repetido){ abrir('telaResultado'); revelar(o); }
@@ -410,26 +485,43 @@ function sortearLocal(){
 document.getElementById('escolhas').addEventListener('click', e => {
   const b = e.target.closest('.pilar'); if (!b) return;
   document.querySelectorAll('.pilar').forEach(x => x.setAttribute('aria-pressed', x === b));
-  document.getElementById('btnEnviar').disabled = false;
 });
 
 document.getElementById('btnEnviar').addEventListener('click', async () => {
-  const sel = document.querySelector('.pilar[aria-pressed="true"]');
+  const sel   = document.querySelector('.pilar[aria-pressed="true"]');
   const aviso = document.getElementById('avisoEsg');
-  if (!sel){ aviso.textContent = 'Escolha um dos três pilares.'; return; }
-  const just = document.getElementById('campoJust').value.trim();
-  if (just.length < 10){ aviso.textContent = 'Escreva ao menos uma frase justificando.'; return; }
+  const just  = document.getElementById('campoJust').value.trim();
+  const resp  = document.getElementById('campoResposta').value.trim();
+
+  if (!sel){
+    aviso.textContent = 'Falta escolher entre E, S e G.';
+    document.getElementById('escolhas').scrollIntoView({block:'center'}); return;
+  }
+  if (just.length < 10){
+    aviso.textContent = 'Falta justificar a escolha do pilar.';
+    document.getElementById('campoJust').focus(); return;
+  }
+  if (resp.length < 10){
+    aviso.textContent = 'Falta responder a pergunta 2.';
+    document.getElementById('campoResposta').focus(); return;
+  }
   aviso.textContent = '';
-  estado.esg = sel.dataset.id; estado.justificativa = just;
+
+  estado.esg = sel.dataset.id;
+  estado.justificativa = just;
+  estado.resposta = resp;
   gravar();                                  // grava antes de enviar
+
   const btn = document.getElementById('btnEnviar');
   btn.disabled = true; btn.textContent = 'Enviando…';
   try {
-    if (SERVIDOR) await api('responder', { nome:estado.nome, esg:estado.esg, justificativa:just });
+    if (SERVIDOR) await api('responder', {
+      nome: estado.nome, esg: estado.esg, justificativa: just, resposta: resp
+    });
     mostrarConfirmacao();
   } catch(e){
     aviso.textContent = e.message;
-    btn.disabled = false; btn.textContent = 'Enviar resposta';
+    btn.disabled = false; btn.textContent = 'Mandar respostas';
   }
 });
 
@@ -462,7 +554,7 @@ document.getElementById('btnEnviar').addEventListener('click', async () => {
     try {
       const r = await api('ressincronizar', estado);
       if (r.ods !== estado.ods){          // servidor manda: mantém a lista coerente
-        estado = { nome:r.nome, ods:r.ods, esg:r.esg||'', justificativa:r.justificativa||'' };
+        estado = { nome:r.nome, ods:r.ods, esg:r.esg||'', justificativa:r.justificativa||'', resposta:r.resposta||'' };
         gravar(); revelar(ODS[r.ods-1]);
       }
     } catch(e){ /* sem rede agora: o que está na tela continua valendo */ }
@@ -525,6 +617,36 @@ if (MODO_QR){
   });
   pintarBotao();
 
+  /* ---------- folha de detalhe ---------- */
+  let alunos = [];
+  const folha = document.getElementById('folha');
+
+  function abrirFolha(i){
+    const x = alunos[i]; if (!x) return;
+    const o = ODS[x.ods - 1];
+    const p = PILARES.find(y => y.id === x.esg);
+    document.getElementById('fOdsRotulo').textContent = rotuloOds(o);
+    document.getElementById('fAluno').textContent = x.nome;
+    const num = document.getElementById('fNum');
+    num.textContent = o.n; num.style.background = o.cor;
+    document.getElementById('fOdsNome').textContent = o.nome;
+    document.getElementById('fEsg').textContent = p ? (p.letra + ' — ' + p.nome) : 'Sem classificação';
+    document.getElementById('fJust').textContent = x.justificativa || '';
+    document.getElementById('fPergunta').textContent = o.pergunta;
+    document.getElementById('fResposta').textContent = x.resposta || '';
+    folha.hidden = false;
+    document.getElementById('folhaFechar').focus();
+  }
+  const fecharFolha = () => { folha.hidden = true; };
+
+  document.getElementById('gradeAlunos').addEventListener('click', e => {
+    const b = e.target.closest('.cartao-aluno');
+    if (b && !b.disabled) abrirFolha(Number(b.dataset.i));
+  });
+  document.getElementById('folhaFechar').addEventListener('click', fecharFolha);
+  folha.addEventListener('click', e => { if (e.target.dataset.fechar !== undefined) fecharFolha(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !folha.hidden) fecharFolha(); });
+
   async function acompanhar(){
     try {
       const r = await fetch('/api/lista', {cache:'no-store'});
@@ -535,20 +657,21 @@ if (MODO_QR){
       document.getElementById('projVazio').style.display = d.atribuicoes.length ? 'none' : 'block';
 
       const recentes = d.atribuicoes.slice().reverse();   // último a sortear aparece primeiro
-      const assinatura = recentes.map(x => x.nome + x.ods + (revelado ? x.esg : '')).join('|');
+      const assinatura = recentes.map(x => x.nome + x.ods + (x.esg ? '1' : '0') + (revelado ? x.esg + x.justificativa + x.resposta : '')).join('|');
       if (assinatura === ultimo) return;
       ultimo = assinatura;
 
-      document.getElementById('gradeAlunos').innerHTML = recentes.map(x => {
+      alunos = recentes;
+      document.getElementById('gradeAlunos').innerHTML = recentes.map((x, i) => {
         const o = ODS[x.ods - 1];
-        return `<div class="cartao-aluno">
+        return `<button class="cartao-aluno" data-i="${i}"${x.esg ? '' : ' disabled'}>
           <span class="num" style="background:${o.cor}">${o.n}</span>
           <span class="txt">
             <span class="aluno">${escapar(x.nome)}</span>
             <span class="ods">${escapar(o.nome)}</span>
           </span>
           ${revelado && x.esg ? `<span class="selo-esg">${x.esg}</span>` : ''}
-        </div>`;
+        </button>`;
       }).join('');
     } catch(e){
       document.getElementById('projVazio').textContent = 'Servidor fora do ar.';
